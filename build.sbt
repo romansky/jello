@@ -1,13 +1,27 @@
 val _scalaVersion = "2.11.7"
 
-val jello = crossProject.settings(
+val jacksons = Seq(
+  "com.fasterxml.jackson.core" % "jackson-core",
+  "com.fasterxml.jackson.core" % "jackson-annotations",
+  "com.fasterxml.jackson.core" % "jackson-databind",
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"
+).map(_ % "2.6.0")
+
+val jello = crossProject
+  .settings(
         name := "jello",
         //scalacOptions ++= Seq("-Ymacro-debug-lite"),
-        libraryDependencies ++= Seq(),
         scalaVersion := _scalaVersion,
         ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
         // Sonatype
-        publishArtifact in Test := false
+//        publishArtifact in Test := false,
+        testFrameworks += TestFrameworks.ScalaTest,
+//        scalacOptions ++= Seq("-Ymacro-debug-lite"),
+        libraryDependencies ++= Seq(
+          "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+          "org.scalatest" %% "scalatest" % "2.2.4" % Test
+        )
     ).jsSettings(
         //scalacOptions ++= Seq("-Ymacro-debug-lite"),
         libraryDependencies ++= Seq(
@@ -17,9 +31,8 @@ val jello = crossProject.settings(
         scalaJSStage in Test := FullOptStage
     ).jvmSettings(
         libraryDependencies ++= Seq(
-            "org.spire-math" %% "jawn-parser" % "0.7.0",
-            "org.scalatest" %% "scalatest" % "2.2.4" % "test"
-        )
+            "org.scalatest" %% "scalatest" % "2.2.4" % Test
+        ) ++ jacksons.map(_ % "test,provided")
     )
 
 // configure a specific directory for scalajs output
@@ -30,8 +43,9 @@ val scalajsOutputDir = Def.settingKey[File]("directory for javascript files outp
 //    crossTarget in(jelloJS, Compile, packageJSKey) := scalajsOutputDir.value
 //}
 
-lazy val jelloJS = jello.js.settings()
 
-lazy val jelloJVM = jello.jvm.settings()
+lazy val jelloJS = jello.js
+
+lazy val jelloJVM = jello.jvm
 
 

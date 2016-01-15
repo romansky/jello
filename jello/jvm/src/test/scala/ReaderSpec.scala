@@ -13,6 +13,15 @@ class ReaderSpec extends FunSpec {
       assert(Success("string-value") == JelloReader.read[String](JelloString("string-value")))
     }
 
+    it("reads  JSON numbers"){
+      assert(Success(100.100) == JelloReader.read[Double](JelloNumber(100.100)))
+    }
+
+    it("reads JSON bools"){
+      assert(Success(true) == JelloReader.read[Boolean](JelloBool(true)))
+      assert(Success(false) == JelloReader.read[Boolean](JelloBool(false)))
+    }
+
   }
 
 }

@@ -8,4 +8,6 @@ import scala.annotation.implicitNotFound
 )
 trait JelloWriter[T] {
 
+  def write(o: T): JelloValue
+
 }
