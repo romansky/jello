@@ -33,8 +33,23 @@ object JelloJson  extends JelloJsonSpec {
       case unknown=> throw new UnsupportedOperationException(s"unsupported native type [$unknown]")
     }
 
+  // serialize JelloValue into js.Vaue
+  private def nativeWrite(jelloValue: JelloValue): Any = {
+    jelloValue match {
+      case JelloBool(x) => x
+      case JelloNull => null
+      case JelloNumber(v) => v
+      case JelloString(s) => s
+      case JelloArray(arr) => js.Array(arr.map(nativeWrite):_*)
+      case JelloObject(o) => js.Dictionary(o.toSeq.map { case (k,v) => (k, nativeWrite(v)) } :_*)
+    }
+  }
+
 
   def toJson[T](o: T)(implicit jelloWriter: JelloWriter[T]): JelloValue = jelloWriter.write(o)
+
+  def toJsonString[T](o: T)(implicit jelloWriter: JelloWriter[T]): String = toJsonString(jelloWriter.write(o))
+  def toJsonString(jelloValue: JelloValue): String = js.JSON.stringify(nativeWrite(jelloValue).asInstanceOf[js.Any])
 
   def fromJson[T](json: JelloValue)(implicit jelloReader: JelloReader[T]): Try[T] = jelloReader.read(json)
 

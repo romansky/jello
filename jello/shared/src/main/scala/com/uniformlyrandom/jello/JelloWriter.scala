@@ -4,7 +4,7 @@ import scala.annotation.implicitNotFound
 
 
 @implicitNotFound(
-  "uPickle does not know how to write [${T}]s; define an implicit JelloWriter[${T}] to teach it how"
+  "don't know how to write [${T}]s; define an implicit JelloWriter[${T}] to fix"
 )
 trait JelloWriter[T] {
 

@@ -54,3 +54,5 @@ trait TypesLibrary {
     override def write(o: Int): JelloValue = JelloNumber(o.toDouble)
   }
 }
+
+object TypesLibrary extends TypesLibrary

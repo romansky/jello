@@ -4,7 +4,7 @@ import scala.annotation.implicitNotFound
 import scala.util.{Try, Success}
 
 @implicitNotFound(
-  "uPickle does not know how to read [${T}]s; define an implicit Reader[${T}] to teach it how"
+  "don't know how to read [${T}]s; define an implicit JelloReader[${T}] to fix"
 )
 trait JelloReader[T] {
 
