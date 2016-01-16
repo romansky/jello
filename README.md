@@ -1,4 +1,4 @@
-# jello
+# jello [![Build Status](https://travis-ci.org/uniformlyrandom/jello.png)](https://travis-ci.org/uniformlyrandom/jello)
 pure macro based JSON serialization targeting mainly Scala-js and Play-json format compatibility
 
 ## Why did I create yet another JSON library?
