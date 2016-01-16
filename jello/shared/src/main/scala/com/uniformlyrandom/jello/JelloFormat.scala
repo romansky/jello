@@ -80,7 +80,8 @@ object JelloFormat extends TypesLibrary {
             }
           } catch {
             case e: RuntimeException=> throw e
-            case NonFatal(e)=> throw new RuntimeException("failed reading " + ${tpe.termSymbol.fullName})
+            case NonFatal(e)=>
+              throw new RuntimeException("JelloFormat: failed reading [" + ${tpe.termSymbol.fullName} + "] [" + jelloValue + "]")
           }
         }
         override def write(o: $tpe): JelloValue =

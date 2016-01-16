@@ -38,7 +38,7 @@ object JelloJson  extends JelloJsonSpec {
     jelloValue match {
       case JelloBool(x) => x
       case JelloNull => null
-      case JelloNumber(v) => v
+      case JelloNumber(v) => v.toDouble
       case JelloString(s) => s
       case JelloArray(arr) => js.Array(arr.map(nativeWrite):_*)
       case JelloObject(o) => js.Dictionary(o.toSeq.map { case (k,v) => (k, nativeWrite(v)) } :_*)

@@ -9,11 +9,15 @@ sealed trait JelloValue extends Any {
 }
 
 object JelloValue {
-  case class JelloNumber(v: Double) extends AnyVal with JelloValue
+  case class JelloNumber(v: BigDecimal) extends AnyVal with JelloValue
   case class JelloBool(v: Boolean) extends AnyVal with JelloValue
   case class JelloString(v: String) extends AnyVal with JelloValue
   case class JelloObject(map: Map[String, JelloValue]) extends JelloValue
   case class JelloArray(seq: Seq[JelloValue]) extends JelloValue
   case object JelloNull extends JelloValue
+
+  object JelloObject {
+    def apply(fields: Seq[(String,JelloValue)]): JelloObject = JelloObject(fields.toMap)
+  }
 }
 

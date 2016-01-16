@@ -1,3 +1,4 @@
+import com.uniformlyrandom.jello.JelloValue.{JelloString, JelloNumber, JelloObject}
 import com.uniformlyrandom.jello.{JelloJson, JelloFormat}
 import minitest._
 
@@ -16,7 +17,7 @@ object ClientSpecs extends SimpleTestSuite {
 		assert(read == Try(c))
 	}
 
-	test("reading and writing cases classes to JSON"){
+	test("reading and writing case classes to JSON"){
 
 		implicit val formatter = JelloFormat.format[SimpleTestClass]
 		val c = SimpleTestClass("string",1)

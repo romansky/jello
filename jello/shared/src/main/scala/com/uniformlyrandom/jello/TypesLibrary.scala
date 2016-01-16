@@ -20,16 +20,38 @@ trait TypesLibrary {
   implicit val stringWriter: JelloWriter[String] = new JelloWriter[String] {
     override def write(o: String): JelloValue = JelloString(o)
   }
-  //double
+  //numbers - double
   implicit val numberReader: JelloReader[Double] = new JelloReader[Double] {
     override def read(jelloValue: JelloValue): Try[Double] =
       jelloValue match {
-        case JelloNumber(v: Double) => Success(v)
+        case JelloNumber(v: BigDecimal) => Success(v.toDouble)
         case unknown => Failure(new ValidationError(unknown, classOf[JelloNumber]))
       }
   }
   implicit val numberWriter: JelloWriter[Double] = new JelloWriter[Double] {
     override def write(o: Double): JelloValue = JelloNumber(o)
+  }
+  //numbers - int
+  implicit val numberIntReader: JelloReader[Int] = new JelloReader[Int] {
+    override def read(jelloValue: JelloValue): Try[Int] =
+      jelloValue match {
+        case JelloNumber(v: BigDecimal) => Success(v.toInt)
+        case unknown => Failure(new ValidationError(unknown, classOf[JelloNumber]))
+      }
+  }
+  implicit val numberIntWriter: JelloWriter[Int] = new JelloWriter[Int] {
+    override def write(o: Int): JelloValue = JelloNumber(o.toDouble)
+  }
+  //numbers - big decimal
+  implicit val numberBigDecimalReader: JelloReader[BigDecimal] = new JelloReader[BigDecimal] {
+    override def read(jelloValue: JelloValue): Try[BigDecimal] =
+      jelloValue match {
+        case JelloNumber(v: BigDecimal) => Success(v)
+        case unknown => Failure(new ValidationError(unknown, classOf[JelloNumber]))
+      }
+  }
+  implicit val numberBigDecimalWriter: JelloWriter[BigDecimal] = new JelloWriter[BigDecimal] {
+    override def write(o: BigDecimal): JelloValue = JelloNumber(o)
   }
   // boolean
   implicit val boolReader: JelloReader[Boolean] = new JelloReader[Boolean] {
@@ -42,17 +64,7 @@ trait TypesLibrary {
   implicit val boolWriter: JelloWriter[Boolean] = new JelloWriter[Boolean] {
     override def write(o: Boolean): JelloValue = JelloBool(o)
   }
-  // int
-  implicit val numberIntReader: JelloReader[Int] = new JelloReader[Int] {
-    override def read(jelloValue: JelloValue): Try[Int] =
-      jelloValue match {
-        case JelloNumber(v: Double) => Success(v.toInt)
-        case unknown => Failure(new ValidationError(unknown, classOf[JelloNumber]))
-      }
-  }
-  implicit val numberIntWriter: JelloWriter[Int] = new JelloWriter[Int] {
-    override def write(o: Int): JelloValue = JelloNumber(o.toDouble)
-  }
+
 }
 
 object TypesLibrary extends TypesLibrary
