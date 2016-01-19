@@ -2,6 +2,7 @@ val _scalaVersion = "2.11.7"
 
 crossScalaVersions := Seq(_scalaVersion)
 scalaVersion := _scalaVersion
+organization := "com.uniformlyrandom"
 
 val jacksons = Seq(
   "com.fasterxml.jackson.core" % "jackson-core",
@@ -16,7 +17,7 @@ val jello = crossProject
   .settings(
         organization := "com.uniformlyrandom",
         name := "jello",
-        version := "0.1",
+        version := "0.2.0",
         crossVersion := CrossVersion.Disabled,
         crossScalaVersions := Seq(_scalaVersion),
         homepage := Some(url("http://www.uniformlyrandom.com")),
@@ -38,12 +39,6 @@ val jello = crossProject
             <url>git@github.com:uniformlyrandom/jello.git</url>
             <connection>scm:git:git@github.com:uniformlyrandom/jello.git</connection>
           </scm>
-          <licenses>
-            <license>
-              <name>MIT license</name>
-              <url>http://www.opensource.org/licenses/mit-license.php</url>
-            </license>
-          </licenses>
           <developers>
             <developer>
               <id>romansky</id>
@@ -53,7 +48,6 @@ val jello = crossProject
           </developers>,
         // publish Github sources
         testFrameworks += TestFrameworks.ScalaTest,
-//        scalacOptions ++= Seq("-Ymacro-debug-lite"),
         libraryDependencies ++= Seq(
           "org.scala-lang" % "scala-reflect" % scalaVersion.value,
           "org.scalatest" %% "scalatest" % "2.2.4" % Test
