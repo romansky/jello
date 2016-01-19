@@ -78,7 +78,20 @@ val jello = crossProject
       ) ++ jacksons.map(_ % "test,provided")
   )
 
+import com.typesafe.sbt.pgp.PgpKeys._
 
+lazy val preventPublication = Seq[Def.Setting[_]](
+    publish :=(),
+    publishLocal :=(),
+    publishSigned :=(),
+    publishLocalSigned :=(),
+    publishArtifact := false,
+    publishTo := Some(Resolver.file("Unused transient repository", target.value / "fakepublish")),
+    packagedArtifacts := Map.empty
+  )
+
+
+preventPublication
 
 // configure a specific directory for scalajs output
 //val scalajsOutputDir = Def.settingKey[File]("directory for javascript files output by scalajs")
