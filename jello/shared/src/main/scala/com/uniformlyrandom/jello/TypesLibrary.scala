@@ -67,10 +67,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
   // option
   implicit def optionWriter[T](implicit jelloWriter: JelloWriter[T]) = new JelloWriter[Option[T]] {
     override def write(o: Option[T]): JelloValue =
-      o match {
-        case Some(t: T) => jelloWriter.write(t)
-        case None => JelloNull
-      }
+      o.map(jelloWriter.write).getOrElse(JelloNull)
   }
 
   implicit def optionReader[T](implicit jelloReader: JelloReader[T]) = new JelloReader[Option[T]] {
