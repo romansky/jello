@@ -64,6 +64,22 @@ trait TypesLibrary extends LowPriorityDefaultReads {
   implicit val boolWriter: JelloWriter[Boolean] = new JelloWriter[Boolean] {
     override def write(o: Boolean): JelloValue = JelloBool(o)
   }
+  // option
+  implicit def optionWriter[T](implicit jelloWriter: JelloWriter[T]) = new JelloWriter[Option[T]] {
+    override def write(o: Option[T]): JelloValue =
+      o match {
+        case Some(t: T) => jelloWriter.write(t)
+        case None => JelloNull
+      }
+  }
+
+  implicit def optionReader[T](implicit jelloReader: JelloReader[T]) = new JelloReader[Option[T]] {
+    override def read(jelloValue: JelloValue): Try[Option[T]] =
+      jelloValue match {
+        case JelloNull => Success(None)
+        case othervalue => jelloReader.read(othervalue).map(Some(_))
+      }
+  }
 
 }
 

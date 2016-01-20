@@ -1,4 +1,4 @@
-import com.uniformlyrandom.jello.{JelloFormat, TypesLibrary}
+import com.uniformlyrandom.jello.{JelloWriter, JelloReader, JelloFormat, TypesLibrary}
 import org.scalatest.FunSpec
 
 import scala.util.Try
@@ -31,6 +31,17 @@ class JelloFormatSpec extends FunSpec {
     val read = formatterList.read(written)
 
     assert(read == Try(c1 :: c2 :: c3 :: Nil))
+
+  }
+
+
+  it("reads and writes primitives"){
+
+    import TypesLibrary._
+
+    assert(
+      Try(Option("testing")) ==
+        implicitly[JelloFormat[Option[String]]].read(implicitly[JelloFormat[Option[String]]].write(Option("testing"))))
 
   }
 

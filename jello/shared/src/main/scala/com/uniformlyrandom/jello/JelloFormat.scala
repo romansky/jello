@@ -44,8 +44,16 @@ object JelloFormat extends TypesLibrary {
           val nameSafe = TermName(s"${m.name.toString.trim}_value")
           val nameString = m.name.toString.trim
 
+
+          // for options allow JelloNull value
+          println(typeSig, typeSig =:= typeOf[Option[_]])
+          val (method,args) = if (typeSig =:= typeOf[Option[_]])
+              (TermName("getOrElse"),List(q"$nameString", q"JelloNull"))
+            else
+              (TermName("get"),List(q"$nameString"))
+
           outMap + (nameSafe ->
-            q"""val $nameSafe: $typeSig = valuesMap.get($nameString)
+            q"""val $nameSafe: $typeSig = valuesMap.$method(...$args)
                .map(implicitly[com.uniformlyrandom.jello.JelloFormat[$typeSig]].read)
                .map(_.toOption)
                .flatten[$typeSig]
@@ -88,7 +96,7 @@ object JelloFormat extends TypesLibrary {
           JelloObject(scala.collection.immutable.Map(..$writeValues))
       }
       """)
-      //println(showCode(out.tree))
+      println(showCode(out.tree))
       out
     } else {
       c.abort(c.enclosingPosition, tpe.typeSymbol.fullName + " is not a case class")

@@ -1,8 +1,8 @@
 val _scalaVersion = "2.11.7"
+val _organization = "com.uniformlyrandom"
 
-crossScalaVersions := Seq(_scalaVersion)
 scalaVersion := _scalaVersion
-organization := "com.uniformlyrandom"
+organization := _organization
 
 val jacksons = Seq(
   "com.fasterxml.jackson.core" % "jackson-core",
@@ -15,11 +15,9 @@ val jacksons = Seq(
 
 val jello = crossProject
   .settings(
-        organization := "com.uniformlyrandom",
+        organization := _organization,
         name := "jello",
         version := "0.2.0",
-        crossVersion := CrossVersion.Disabled,
-        crossScalaVersions := Seq(_scalaVersion),
         homepage := Some(url("http://www.uniformlyrandom.com")),
         licenses := Seq(("MIT", url("http://opensource.org/licenses/mit-license.php"))),
         //scalacOptions ++= Seq("-Ymacro-debug-lite"),
@@ -97,6 +95,5 @@ preventPublication
 
 
 lazy val jelloJS = jello.js
-
 lazy val jelloJVM = jello.jvm
 
