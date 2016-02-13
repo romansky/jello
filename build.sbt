@@ -1,5 +1,6 @@
 val _scalaVersion = "2.11.7"
 val _organization = "com.uniformlyrandom"
+val _playVersion = "2.4.4"
 
 scalaVersion := _scalaVersion
 organization := _organization
@@ -67,7 +68,8 @@ val jello = crossProject
       }))
   ).jvmSettings(
       libraryDependencies ++= Seq(
-          "org.scalatest" %% "scalatest" % "2.2.4" % Test
+          "org.scalatest" %% "scalatest" % "2.2.4" % Test,
+          "com.typesafe.play" %% "play-json" % _playVersion
       ) ++ jacksons.map(_ % "test,provided")
   )
 
