@@ -1,8 +1,8 @@
 package com.uniformlyrandom.jello
 
 import scala.annotation.implicitNotFound
+import scala.language.experimental.macros
 import scala.util.Try
-
 
 
 @implicitNotFound(
@@ -12,8 +12,12 @@ trait JelloFormat[A] extends JelloWriter[A] with JelloReader[A]
 
 object JelloFormat extends TypesLibrary {
 
-  import scala.language.experimental.macros
-  import scala.reflect.macros.blackbox
+  /**
+    *
+    * @tparam T a trait
+    * @return
+    */
+  def formatTrait[T](implicit tm: reflect.ClassTag[T]): FormatBuilder[T] = FormatBuilder[T]
 
   def format[A]: JelloFormat[A] = macro formatMacroImpl[A]
 
@@ -24,13 +28,15 @@ object JelloFormat extends TypesLibrary {
     override def read(jelloValue: JelloValue): Try[A] = reader.read(jelloValue)
     override def write(o: A): JelloValue = writer.write(o)
   }
-
+  import scala.reflect.macros.blackbox
   // TODO harden code to check its working with case class, only.
   def formatMacroImpl[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[JelloFormat[T]] = {
     import c.universe._
     val tpe = weakTypeTag[T].tpe
     val tpeComp = weakTypeOf[T].companion
 
+    if (tpeComp.orElse(null) == null)
+      c.abort(c.enclosingPosition, s"${tpe.toString} has no companion defined")
 
     if (tpe.typeSymbol.asClass.isCaseClass){
       val tc = tpe.typeSymbol.companion
@@ -88,7 +94,7 @@ object JelloFormat extends TypesLibrary {
           } catch {
             case e: RuntimeException=> throw e
             case NonFatal(e)=>
-              throw new RuntimeException("JelloFormat: failed reading [" + ${tpe.termSymbol.fullName} + "] [" + jelloValue + "]")
+              throw new RuntimeException("JelloFormat: failed reading [" + ${tpe.toString} + "] [" + jelloValue + "]")
           }
         }
         override def write(o: $tpe): JelloValue =

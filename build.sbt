@@ -17,7 +17,8 @@ val jello = crossProject
   .settings(
         organization := _organization,
         name := "jello",
-        version := "0.2.0",
+        version := "0.2.1",
+        scalacOptions += "-feature",
         homepage := Some(url("http://www.uniformlyrandom.com")),
         licenses := Seq(("MIT", url("http://opensource.org/licenses/mit-license.php"))),
         //scalacOptions ++= Seq("-Ymacro-debug-lite"),

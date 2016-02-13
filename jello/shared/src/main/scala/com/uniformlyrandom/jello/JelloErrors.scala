@@ -1,6 +1,8 @@
 package com.uniformlyrandom.jello
 
-sealed trait JelloErrors extends Throwable {
+import scala.language.existentials
+
+sealed trait JelloErrors extends RuntimeException {
   def message: String
   def input: JelloValue
 }

@@ -4,7 +4,7 @@ import com.uniformlyrandom.jello.JelloValue.JelloObject
 
 class JelloError private(ex: RuntimeException) extends Exception(ex) {
   def this(message: String) = this(new RuntimeException(message))
-  def this(message: String, cause:Throwable) = this(new RuntimeException(message, cause))
+  def this(message: String, cause: RuntimeException) = this(new RuntimeException(message, cause))
 }
 
 object JelloError {

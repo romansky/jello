@@ -6,6 +6,8 @@ import com.uniformlyrandom.jello.JelloValue._
 import scala.collection.{Traversable, generic}
 import scala.util.{Failure, Success, Try}
 
+import scala.language.higherKinds
+
 trait TypesLibrary extends LowPriorityDefaultReads {
   // handling primitive types
 

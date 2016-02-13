@@ -4,8 +4,6 @@ package com.uniformlyrandom.jello
 // see http://docs.scala-lang.org/overviews/core/value-classes.html
 sealed trait JelloValue extends Any {
   def name = getClass.getSimpleName.replace("$","")
-
-
 }
 
 object JelloValue {

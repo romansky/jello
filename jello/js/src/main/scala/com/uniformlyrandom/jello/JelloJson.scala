@@ -53,5 +53,4 @@ object JelloJson  extends JelloJsonSpec {
 
   def fromJson[T](json: JelloValue)(implicit jelloReader: JelloReader[T]): Try[T] = jelloReader.read(json)
 
-
 }
