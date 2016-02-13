@@ -8,7 +8,7 @@ import scala.util.{Failure, Success, Try}
 
 
 @implicitNotFound(
-  "No Json formatter found for type [${A}]. Try to implement an implicit Format for this type."
+  "No JelloFormat found for type [${A}]. Try to implement an implicit JelloFormat for this type."
 )
 trait JelloFormat[A] extends JelloWriter[A] with JelloReader[A]
 
@@ -63,8 +63,8 @@ object JelloFormat extends TypesLibrary {
 
       val classMembers = tpe.members.toList.filter(m=> !m.isMethod)
 
-      val readMemberValues = classMembers.reverse
-        .foldLeft(Map.empty[c.universe.TermName,c.universe.Tree]) { case (outMap,m) =>
+      val readMemberValues = classMembers
+        .foldLeft(List.empty[(c.universe.TermName,c.universe.Tree)]) { case (out,m) =>
           val typeSig = m.typeSignature
           val nameSafe = TermName(s"${m.name.toString.trim}_value")
           val nameString = m.name.toString.trim
@@ -76,12 +76,12 @@ object JelloFormat extends TypesLibrary {
             else
               (TermName("get"),List(q"$nameString"))
 
-          outMap + (nameSafe ->
+          (nameSafe ->
             q"""val $nameSafe: $typeSig = valuesMap.$method(...$args)
                .map(implicitly[com.uniformlyrandom.jello.JelloFormat[$typeSig]].read)
                .map(_.toOption)
                .flatten[$typeSig]
-               .getOrElse[$typeSig](throw new MissingObjectField($nameString, o))""")
+               .getOrElse[$typeSig](throw new MissingObjectField($nameString, o))""") :: out
         }
 
       val writeValues = classMembers.reverse
@@ -106,8 +106,8 @@ object JelloFormat extends TypesLibrary {
           try {
             jelloValue match {
               case o @ JelloObject(valuesMap) =>
-                ..${readMemberValues.values}
-                Try($compApply(..${readMemberValues.keys}))
+                ..${readMemberValues.map(_._2)}
+                Try($compApply(..${readMemberValues.map(_._1)}))
               case unknown: JelloValue => throw new NotAnObject(unknown)
             }
           } catch {
