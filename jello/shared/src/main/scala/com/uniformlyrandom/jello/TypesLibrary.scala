@@ -90,6 +90,24 @@ trait TypesLibrary extends LowPriorityDefaultReads {
         case othervalue => jelloReader.read(othervalue).map(Some(_))
       }
   }
+  // maps with String keys
+  implicit def mapReader[V](implicit vReader: JelloReader[V]): JelloReader[collection.immutable.Map[String, V]] = new JelloReader[Map[String, V]] {
+    override def read(jelloValue: JelloValue): Try[Map[String, V]] = jelloValue match {
+      case JelloObject(map) =>
+        map.foldLeft(Success(Map.empty[String,V]): Try[Map[String,V]]) {
+          case (fail: Failure[Map[String,V]], _) => fail
+          case (Success(out), (key, value)) => vReader.read(value) match {
+            case Success(valueRead) => Success(out + (key -> valueRead))
+            case Failure(reason) => Failure(new RuntimeException(s"failed to convert Map as expected for key [$key]",reason))
+          }
+        }.map(_.toList.reverse.toMap)
+
+      case unknown => Failure(new RuntimeException(s"was expecting JelloObject instead got [${unknown.toString}]"))
+    }
+  }
+  implicit def mapWriter[V](implicit vWriter: JelloWriter[V]): JelloWriter[collection.immutable.Map[String, V]] = new JelloWriter[Map[String, V]] {
+    override def write(o: Map[String, V]): JelloValue = JelloObject(o.map { case (k,v)=> k -> vWriter.write(v) })
+  }
 
 }
 

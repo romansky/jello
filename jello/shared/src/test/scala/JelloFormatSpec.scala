@@ -45,6 +45,18 @@ class JelloFormatSpec extends FunSpec {
 
   }
 
+  it("reads and writes maps"){
+    import TypesLibrary._
+
+    val map = Map[String,String]("key1"-> "value1", "key2"-> "value2")
+    val formatter = implicitly[JelloFormat[Map[String,String]]]
+
+    val jjson = formatter.write(map)
+
+    assert(formatter.read(jjson) == Try(map))
+
+  }
+
 
 
   // TODO: write test for all failure conditions
