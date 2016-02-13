@@ -64,7 +64,7 @@ object JelloFormat extends TypesLibrary {
       val classMembers = tpe.members.toList.filter(m=> !m.isMethod)
 
       val readMemberValues = classMembers
-        .foldLeft(List.empty[(c.universe.TermName,c.universe.Tree)]) { case (out,m) =>
+        .foldLeft(List.empty[(c.universe.TermName,c.universe.Tree)]) { case (outList,m) =>
           val typeSig = m.typeSignature
           val nameSafe = TermName(s"${m.name.toString.trim}_value")
           val nameString = m.name.toString.trim
@@ -81,7 +81,7 @@ object JelloFormat extends TypesLibrary {
                .map(implicitly[com.uniformlyrandom.jello.JelloFormat[$typeSig]].read)
                .map(_.toOption)
                .flatten[$typeSig]
-               .getOrElse[$typeSig](throw new MissingObjectField($nameString, o))""") :: out
+               .getOrElse[$typeSig](throw new MissingObjectField($nameString, o))""") :: outList
         }
 
       val writeValues = classMembers.reverse
