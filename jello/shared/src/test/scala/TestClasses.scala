@@ -24,6 +24,12 @@ object TestClasses {
     blahBlah: Int
   ) extends Base
 
+
+  object TestEnumeration extends Enumeration {
+    type TestEnumeration = Value
+    val FirstE, SecondE, ThirdE = Value
+  }
+
 }
 
 

@@ -1,8 +1,10 @@
 package com.uniformlyrandom.jello
 
+import com.uniformlyrandom.jello.JelloValue.JelloString
+
 import scala.annotation.implicitNotFound
 import scala.language.experimental.macros
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 
 @implicitNotFound(
@@ -18,6 +20,23 @@ object JelloFormat extends TypesLibrary {
     * @return
     */
   def formatTrait[T](implicit tm: reflect.ClassTag[T]): FormatBuilder[T] = FormatBuilder[T]
+
+  def formatEnumeration[E <: Enumeration](enum: E): JelloFormat[E#Value] = new JelloFormat[E#Value] {
+
+    override def read(jelloValue: JelloValue): Try[E#Value] = jelloValue match {
+      case JelloString(s) =>
+        try {
+          Success(enum.withName(s))
+        } catch {
+          case _: NoSuchElementException=> Failure(new RuntimeException(s"could not find enum member with value [$s]"))
+        }
+
+      case _=> Failure(new RuntimeException(s"string value expected got [$jelloValue]"))
+    }
+
+    import scala.language.implicitConversions
+    override def write(o: E#Value): JelloValue = JelloString(o.toString)
+  }
 
   def format[A]: JelloFormat[A] = macro formatMacroImpl[A]
 

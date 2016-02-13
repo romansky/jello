@@ -55,6 +55,17 @@ trait TypesLibrary extends LowPriorityDefaultReads {
   implicit val numberBigDecimalWriter: JelloWriter[BigDecimal] = new JelloWriter[BigDecimal] {
     override def write(o: BigDecimal): JelloValue = JelloNumber(o)
   }
+  //numbers - long
+  implicit val numberLongReader: JelloReader[Long] = new JelloReader[Long] {
+    override def read(jelloValue: JelloValue): Try[Long] =
+      jelloValue match {
+        case JelloNumber(v: BigDecimal) => Success(v.toLong)
+        case unknown => Failure(new ValidationError(unknown, classOf[JelloNumber]))
+      }
+  }
+  implicit val numberLongWriter: JelloWriter[Long] = new JelloWriter[Long] {
+    override def write(o: Long): JelloValue = JelloNumber(BigDecimal(o))
+  }
   // boolean
   implicit val boolReader: JelloReader[Boolean] = new JelloReader[Boolean] {
     override def read(jelloValue: JelloValue): Try[Boolean] =

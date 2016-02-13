@@ -1,4 +1,4 @@
-import TestClasses.{Base, SecondBase, FirstBase}
+import TestClasses.{TestEnumeration, Base, SecondBase, FirstBase}
 import com.uniformlyrandom.jello.JelloFormat
 import minitest.SimpleTestSuite
 
@@ -6,7 +6,9 @@ import scala.util.Try
 
 object JsSerializationSpecs extends SimpleTestSuite {
 
-  test("serializes serializes traits"){
+  def it = test _
+
+  it("serializes serializes traits"){
 
     implicit val fbFormat = JelloFormat.format[FirstBase]
     implicit val sbFormat = JelloFormat.format[SecondBase]
@@ -23,6 +25,14 @@ object JsSerializationSpecs extends SimpleTestSuite {
     assert(formatter.read(jelloValue) == Try(first))
 
   }
+
+  it("handles enumerations") {
+    implicit val jformat = JelloFormat.formatEnumeration(TestEnumeration)
+
+    val jsItem = jformat.write(TestEnumeration.FirstE)
+    assert(jformat.read(jsItem) == Try(TestEnumeration.FirstE))
+  }
+
 
 
 
