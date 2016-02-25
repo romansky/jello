@@ -88,15 +88,6 @@ lazy val preventPublication = Seq[Def.Setting[_]](
 
 preventPublication
 
-// configure a specific directory for scalajs output
-//val scalajsOutputDir = Def.settingKey[File]("directory for javascript files output by scalajs")
-
-// make all JS builds use the output dir defined later
-//lazy val js2jvmSettings = Seq(packageScalaJSLauncher, fastOptJS, fullOptJS) map { packageJSKey =>
-//    crossTarget in(jelloJS, Compile, packageJSKey) := scalajsOutputDir.value
-//}
-
-
 lazy val jelloJS = jello.js
 lazy val jelloJVM = jello.jvm
 
