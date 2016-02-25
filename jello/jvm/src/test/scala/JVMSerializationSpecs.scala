@@ -1,8 +1,8 @@
-import TestClasses.{TestEnumeration, Base, SecondBase, FirstBase}
-import com.uniformlyrandom.jello.JelloFormat
+import TestClasses._
+import com.uniformlyrandom.jello.{JelloJson, TypesLibrary, JelloFormat}
 import org.scalatest.FunSpec
 
-import scala.util.Try
+import scala.util.{Success, Try}
 
 class JVMSerializationSpecs extends FunSpec {
 
@@ -31,5 +31,24 @@ class JVMSerializationSpecs extends FunSpec {
     val jsItem = jformat.write(TestEnumeration.FirstE)
     assert(jformat.read(jsItem) == Try(TestEnumeration.FirstE))
   }
+
+  it("support optional values fall back to None"){
+
+    import TypesLibrary._
+
+    val o = WithOptionals("zubiname",None)
+    val fmt = JelloFormat.format[WithOptionals]
+    val ow = fmt.write(o)
+    val or = fmt.read(ow)
+    assert(Success(o) == or)
+
+    val json = """{"name":"zubiname"}"""
+    val op = JelloJson.parse(json)
+    val or2 = fmt.read(op)
+
+    assert(Success(o) == or2)
+
+  }
+
 
 }

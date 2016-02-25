@@ -71,18 +71,19 @@ object JelloFormat extends TypesLibrary {
 
 
           // for options allow JelloNull value
-          val (method,args) = if (typeSig =:= typeOf[Option[_]])
-              (TermName("getOrElse"),List(q"$nameString", q"JelloNull"))
+          val (method,args) = if (typeSig.erasure =:= typeOf[Option[_]].erasure)
+              (TermName("getOrElse"),List(q"None"))
             else
-              (TermName("get"),List(q"$nameString"))
+              (TermName("getOrElse"),List(q"throw new MissingObjectField($nameString, o)"))
 
           (nameSafe ->
-            q"""val $nameSafe: $typeSig = valuesMap.$method(...$args)
+            q"""val $nameSafe: $typeSig = valuesMap.get($nameString)
                .map(implicitly[com.uniformlyrandom.jello.JelloFormat[$typeSig]].read)
                .map(_.toOption)
                .flatten[$typeSig]
-               .getOrElse[$typeSig](throw new MissingObjectField($nameString, o))""") :: outList
+               .$method(..$args)""") :: outList
         }
+
 
       val writeValues = classMembers.reverse
         .foldLeft(Map.empty[TermName, Type]) { case (outMap, m) =>
@@ -113,7 +114,7 @@ object JelloFormat extends TypesLibrary {
           } catch {
             case e: RuntimeException=> throw e
             case NonFatal(e)=>
-              throw new RuntimeException("JelloFormat: failed reading [" + ${tpe.toString} + "] [" + jelloValue + "]")
+              throw new RuntimeException("JelloFormat: failed reading [" + ${tpe.toString} + "] [" + jelloValue + "]",e)
           }
         }
         override def write(o: $tpe): JelloValue =

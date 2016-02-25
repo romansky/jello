@@ -1,7 +1,7 @@
 import com.uniformlyrandom.jello.{JelloWriter, JelloReader, JelloFormat, TypesLibrary}
 import org.scalatest.FunSpec
 
-import scala.util.Try
+import scala.util.{Success, Try}
 
 class JelloFormatSpec extends FunSpec {
 
@@ -57,6 +57,15 @@ class JelloFormatSpec extends FunSpec {
 
   }
 
+  it("support optional values fall back to None"){
+    import TypesLibrary._
+
+    val o = WithOptionals("name",None)
+    val fmt = JelloFormat.format[WithOptionals]
+    val ow = fmt.write(o)
+    val or = fmt.read(ow)
+    assert(Success(o) == or)
+  }
 
 
   // TODO: write test for all failure conditions

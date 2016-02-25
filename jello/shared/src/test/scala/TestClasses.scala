@@ -30,6 +30,11 @@ object TestClasses {
     val FirstE, SecondE, ThirdE = Value
   }
 
+  case class WithOptionals(
+    name: String,
+    optional: Option[String]
+  )
+
 }
 
 
