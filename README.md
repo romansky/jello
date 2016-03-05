@@ -11,7 +11,11 @@ As it turned out, if one wants to use one of these generic libraries on the back
 
 Thus Jello was born.
 
-# Examples
+# Usage
+
+## Installation
+
+Edit `build.sbt` and add the following `libraryDependencies ++= Seq("com.uniformlyrandom" %%% "jello" % "0.3.0)`
 
 ## Overview
 
