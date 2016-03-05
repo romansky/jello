@@ -1,4 +1,4 @@
-# jello [![Build Status](https://travis-ci.org/uniformlyrandom/jello.png)](https://travis-ci.org/uniformlyrandom/jello)
+# jello [![Build Status](https://travis-ci.org/uniformlyrandom/jello.png)](https://travis-ci.org/uniformlyrandom/jello) [![Scala.js](https://www.scala-js.org/assets/badges/scalajs-0.6.6.svg)](https://www.scala-js.org)
 
 Scala.js & JVM JSON marshalling library with straightforward format.
 
