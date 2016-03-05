@@ -1,8 +1,48 @@
 # jello [![Build Status](https://travis-ci.org/uniformlyrandom/jello.png)](https://travis-ci.org/uniformlyrandom/jello)
-pure macro based JSON serialization targeting mainly Scala-js and Play-json format compatibility
+
+Scala.js & JVM JSON marshalling library with straightforward format.
 
 ## Why did I create yet another JSON library?
 
-Scala.js prohibits dynamically invoked code (it does static analasys to do dead code elimination–to minimize generated package size), so one has to use macros where one would otherwise use mechanizems such as reflection etc.
+Scala.js prohibits dynamically invoked code, so one has to use macros where one would otherwise use mechanisms such as reflection etc.
 
-At the same time, the Scala.js community created some idiomatic JSON marshaling/pickling libraries which were a far cry from "generic" handling of back-end JSON parsing libraries (such as Play-json and the likes). As it turned out, if one wants to use one of these generic libraries on the back-end he could not use any of the existing Scala-js compatible JSON libraries.
+At the same time, the Scala.js community created some idiomatic marshaling/pickling libraries which were a divergence from the common. (Play Framework etc..) 
+As it turned out, if one wants to use one of these generic libraries on the back-end he could not use any of the existing Scala-js compatible JSON libraries.
+
+Thus Jello was born.
+
+# Examples
+
+## Overview
+
+`Jello` takes inspiration from `Play Json`, the formatters need to be provided implicitly, it's recommended to have the companion object contain these formatters
+ 
+```scala
+case class A (
+    m1: String,
+    m2: Int
+)
+
+object A {
+    implicit fmt: JelloFormat[A] = JelloFormat.format[A]
+}
+
+object App {
+    def main(args: Array[String]): Unit = {
+        val a: A = A("value",1)
+        val aJV: JelloValue = JelloJson.toJson(a)
+        val aJson: String = JelloJson.toJsonString(aJV)
+        //aJson == {"m1":"value","m2":1}
+        val ajJV: JelloValue = JelloJson.parse(aJson)
+        val aTry: Try[A] = JelloJson.fromJson(ajJV)
+        
+        assert(Try(a) == aTry)
+    }
+}
+```
+
+### Supported features
+
+ * `Enumeration`s support
+ * helper constructs to serialize `trait`s
+  
