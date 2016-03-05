@@ -21,7 +21,9 @@ Thus Jello was born.
 
 ## Installation
 
-Edit `build.sbt` and add the following `libraryDependencies ++= Seq("com.uniformlyrandom" %%% "jello" % "0.3.0)`
+```
+libraryDependencies ++= Seq("com.uniformlyrandom" %%% "jello" % "0.3.0)
+```
 
 ## Overview
 
