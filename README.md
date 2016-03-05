@@ -40,6 +40,9 @@ object A {
 }
 
 object App {
+
+    import com.uniformlyrandom.jello.TypesLibrary._
+
     def main(args: Array[String]): Unit = {
         val a: A = A("value",1)
         val aJV: JelloValue = JelloJson.toJson(a)
