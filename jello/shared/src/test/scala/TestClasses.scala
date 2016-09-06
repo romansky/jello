@@ -24,6 +24,12 @@ object TestClasses {
     blahBlah: Int
   ) extends Base
 
+  sealed trait TraitEnum
+  object TraitEnum {
+    case object Unoz extends TraitEnum
+    case object Desz extends TraitEnum
+  }
+
 
   object TestEnumeration extends Enumeration {
     type TestEnumeration = Value

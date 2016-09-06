@@ -4,6 +4,7 @@ import com.uniformlyrandom.jello.JelloValue.JelloString
 
 import scala.annotation.implicitNotFound
 import scala.language.experimental.macros
+import scala.reflect.macros.blackbox
 import scala.util.{Failure, Success, Try}
 
 
@@ -20,6 +21,65 @@ object JelloFormat extends TypesLibrary {
     * @return
     */
   def formatTrait[T](implicit tm: reflect.ClassTag[T]): FormatBuilder[T] = FormatBuilder[T]
+
+  def formatSealedTrait[T]: JelloFormat[T] = macro formatSealedTraitImpl[T]
+
+  def formatSealedTraitImpl[T: c.WeakTypeTag](c: blackbox.Context): c.Expr[JelloFormat[T]] = {
+    import c.universe._
+
+    val symbol = weakTypeOf[T].typeSymbol
+    val companion = symbol.companion
+    val tpe = weakTypeTag[T].tpe
+
+    if (!symbol.isClass)
+      c.abort(
+        c.enclosingPosition,
+        "JelloFormat can only enumerate values of a sealed trait or class."
+      )
+    else if (!symbol.asClass.isSealed)
+      c.abort(
+        c.enclosingPosition,
+        "JelloFormat can only enumerate values of a sealed trait or class."
+      )
+    else if (!companion.isModule)
+      c.abort(c.enclosingPosition,
+        "JelloFormat can only enumerate values located inside a companion object"
+      )
+    else {
+
+
+      val decls = companion.typeSignature.decls.filter(_.typeSignature <:< tpe).toList
+      val members = decls.map {
+        case sym if symbol.isStatic =>
+          // this is a case object
+          val nameSafe = TermName(s"${sym.name}j")
+          q"""
+              implicit val $nameSafe: JelloFormat[${sym.typeSignature}] = new JelloFormat[${sym.typeSignature}] {
+                override def read(jelloValue: JelloValue): Try[${sym.typeSignature}] = Success($sym)
+                override def write(o: ${sym.typeSignature}): JelloValue = JelloObject(Map.empty[String,JelloValue])
+              }
+              builder = builder.withMember[${sym.typeSignature}]
+          """
+        case unknown =>
+          c.abort(c.enclosingPosition, s"JelloFormat currently only supports `case object`s enumerables. " +
+            s"[$unknown] is not a `case object`")
+      }
+
+      c.Expr[JelloFormat[T]](
+        q"""
+           import com.uniformlyrandom.jello._
+           import com.uniformlyrandom.jello.JelloValue._
+
+           var builder = FormatBuilder.apply[$tpe]
+
+           ..$members
+
+           builder.buildIdProperty("$$class")
+
+         """)
+
+    }
+  }
 
   def formatEnumeration[E <: Enumeration](enum: E): JelloFormat[E#Value] = new JelloFormat[E#Value] {
 

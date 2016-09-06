@@ -50,5 +50,12 @@ class JVMSerializationSpecs extends FunSpec {
 
   }
 
+  it("serializes traits with multiple case object descendants"){
+
+    val formatter = JelloFormat.formatSealedTrait[TraitEnum]
+    assert(formatter.read(formatter.write(TraitEnum.Desz)) == Success(TraitEnum.Desz))
+    assert(formatter.read(formatter.write(TraitEnum.Unoz)) == Success(TraitEnum.Unoz))
+  }
+
 
 }
