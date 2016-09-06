@@ -47,22 +47,21 @@ object JelloFormat extends TypesLibrary {
       )
     else {
 
+      val objects = companion.typeSignature.decls.filter(_.typeSignature <:< tpe).toList
+      val classes = companion.typeSignature.decls.filter(_.isClass).filter(_.asClass.baseClasses.contains(symbol)).toList
 
-      val decls = companion.typeSignature.decls.filter(_.typeSignature <:< tpe).toList
-      val members = decls.map {
-        case sym if symbol.isStatic =>
-          // this is a case object
-          val nameSafe = TermName(s"${sym.name}j")
+      val members = (objects ::: classes).map {
+        case sym if sym.isClass =>
+          // this is a normal class
           q"""
-              implicit val $nameSafe: JelloFormat[${sym.typeSignature}] = new JelloFormat[${sym.typeSignature}] {
-                override def read(jelloValue: JelloValue): Try[${sym.typeSignature}] = Success($sym)
-                override def write(o: ${sym.typeSignature}): JelloValue = JelloObject(Map.empty[String,JelloValue])
-              }
-              builder = builder.withMember[${sym.typeSignature}]
+              builder = builder.withMember[$sym]
+           """
+        case sym =>
+          // this is a case object
+          q"""
+              builder = builder.withMember($sym)
           """
-        case unknown =>
-          c.abort(c.enclosingPosition, s"JelloFormat currently only supports `case object`s enumerables. " +
-            s"[$unknown] is not a `case object`")
+
       }
 
       c.Expr[JelloFormat[T]](

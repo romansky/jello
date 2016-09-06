@@ -1,15 +1,24 @@
 package com.uniformlyrandom.jello
 
-import com.uniformlyrandom.jello.JelloValue.{JelloString, JelloObject}
+import com.uniformlyrandom.jello.JelloValue.{JelloObject, JelloString}
 
-import scala.util.{Failure, Try}
+import scala.util.{Failure, Success}
 
 class FormatBuilder[T] private (siblingBuilders: List[(reflect.ClassTag[_ <: T], JelloFormat[_ <: T])])(implicit tm: reflect.ClassTag[T]) {
 
   private lazy val parentName = tm.toString()
 
-  def withMember[M <: T](m: M)(implicit jelloFormat: JelloFormat[M]): FormatBuilder[T] =
-    new FormatBuilder[T]((reflect.ClassTag[M](m.getClass), jelloFormat) :: siblingBuilders)
+  def withMember[M <: T](m: M)(implicit tag: reflect.ClassTag[M]): FormatBuilder[T] = {
+      val isObject = tag.toString().endsWith("$")
+      if (!isObject)
+        throw new RuntimeException(s"`FormatBuilder.withMember()` only supports objects [${m.toString}] is not an object")
+
+      val mFormat: JelloFormat[M] = new JelloFormat[M] {
+        override def read(jelloValue: JelloValue): scala.util.Try[M] = Success(m)
+        override def write(o: M): JelloValue = JelloObject(Map.empty[String,JelloValue])
+      }
+      new FormatBuilder[T]((reflect.ClassTag[M](m.getClass), mFormat) :: siblingBuilders)
+    }
 
   def withMember[M <: T](implicit m: reflect.ClassTag[M], jelloFormat: JelloFormat[M]): FormatBuilder[T] =
     new FormatBuilder[T]((m, jelloFormat) :: siblingBuilders)
@@ -18,7 +27,7 @@ class FormatBuilder[T] private (siblingBuilders: List[(reflect.ClassTag[_ <: T],
   def buildIdProperty(idProperty: String)(implicit jelloJsonSpec: JelloJsonSpec): JelloFormat[T] =
     new JelloFormat[T] {
 
-      override def read(jelloValue: JelloValue): Try[T] = {
+      override def read(jelloValue: JelloValue): scala.util.Try[T] = {
         if (!jelloValue.isInstanceOf[JelloObject]){
           Failure(new RuntimeException(s"expected JelloObject got [${jelloValue.getClass.getSimpleName}]"))
         } else {
@@ -42,7 +51,8 @@ class FormatBuilder[T] private (siblingBuilders: List[(reflect.ClassTag[_ <: T],
             val writtenO = jsonFormatter.asInstanceOf[JelloFormat[T]].write(o).asInstanceOf[JelloObject]
             writtenO.copy(map = writtenO.map.updated(idProperty,JelloString(clsTag.toString())))
         }.getOrElse(
-          throw new RuntimeException(s"could not find a formatter under [$parentName] for [${clsTag.toString}]")
+          throw new RuntimeException(s"could not find a formatter under [$parentName] for [${clsTag.toString}] " +
+            s"\n available formatters are [${siblingBuilders.map(_._1.toString())}]")
         )
 
       }

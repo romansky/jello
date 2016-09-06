@@ -1,4 +1,4 @@
-
+import com.uniformlyrandom.jello.JelloFormat
 
 object TestClasses {
 
@@ -28,6 +28,10 @@ object TestClasses {
   object TraitEnum {
     case object Unoz extends TraitEnum
     case object Desz extends TraitEnum
+    case class Tresz(p: String, p2: Int) extends TraitEnum
+    object Tresz {
+      implicit val fmt = JelloFormat.format[Tresz]
+    }
   }
 
 

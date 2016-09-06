@@ -35,8 +35,6 @@ object JsSerializationSpecs extends SimpleTestSuite {
 
   it("support optional values fall back to None"){
 
-    import TypesLibrary._
-
     val o = WithOptionals("zubiname",None)
     val fmt = JelloFormat.format[WithOptionals]
     val ow = fmt.write(o)
@@ -52,10 +50,10 @@ object JsSerializationSpecs extends SimpleTestSuite {
   }
 
   it("serializes traits with multiple case object descendants"){
-
     val formatter = JelloFormat.formatSealedTrait[TraitEnum]
     assert(formatter.read(formatter.write(TraitEnum.Desz)) == Success(TraitEnum.Desz))
     assert(formatter.read(formatter.write(TraitEnum.Unoz)) == Success(TraitEnum.Unoz))
+    assert(formatter.read(formatter.write(TraitEnum.Tresz("ppp",32))) == Success(TraitEnum.Tresz("ppp",32)))
   }
 
 }
