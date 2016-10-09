@@ -1,5 +1,7 @@
+import java.util.UUID
+
 import TestClasses._
-import com.uniformlyrandom.jello.{JelloJson, TypesLibrary, JelloFormat}
+import com.uniformlyrandom.jello.{JelloFormat, JelloJson, TypesLibrary}
 import minitest.SimpleTestSuite
 
 import scala.util.{Success, Try}
@@ -54,6 +56,25 @@ object JsSerializationSpecs extends SimpleTestSuite {
     assert(formatter.read(formatter.write(TraitEnum.Desz)) == Success(TraitEnum.Desz))
     assert(formatter.read(formatter.write(TraitEnum.Unoz)) == Success(TraitEnum.Unoz))
     assert(formatter.read(formatter.write(TraitEnum.Tresz("ppp",32))) == Success(TraitEnum.Tresz("ppp",32)))
+  }
+
+  it("serializes and de-serializes Try's") {
+    import TypesLibrary._
+    val message = s"MESSAGE ${UUID.randomUUID().toString}"
+    val badTry: Try[String] = Try(throw new RuntimeException(message))
+    val goodTry = Try(message)
+    val badSerialized = JelloJson.toJsonString(badTry)
+    val goodSeralized = JelloJson.toJsonString(goodTry)
+    val badJello = JelloJson.parse(badSerialized)
+    val goodJello = JelloJson.parse(goodSeralized)
+    val badTryUnserialized: Try[Try[String]] =
+      JelloJson.fromJson[Try[String]](badJello)
+    val goodTryUnserialized: Try[Try[String]] =
+      JelloJson.fromJson[Try[String]](goodJello)
+    assert(
+      badTryUnserialized.get.isFailure && badTryUnserialized.get.failed.get.getMessage == message)
+    assert(
+      goodTryUnserialized.get.isSuccess && goodTryUnserialized.get.get == message)
   }
 
 }

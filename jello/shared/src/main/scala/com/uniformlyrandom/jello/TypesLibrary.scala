@@ -207,7 +207,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
             JelloObject(Map(TRY_SUCCESS_KEY → jelloValue))
           case Failure(throwable) ⇒
             JelloObject(
-              Map(TRY_FAILURE_KEY → JelloString(throwable.getCause.toString)))
+              Map(TRY_FAILURE_KEY → JelloString(throwable.getMessage)))
         }
     }
 
