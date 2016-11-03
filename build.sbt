@@ -56,6 +56,7 @@ val jello = crossProject
   .settings(xerial.sbt.Sonatype.sonatypeSettings:_*)
   .jsSettings(
       //scalacOptions ++= Seq("-Ymacro-debug-lite"),
+      emitSourceMaps := true,
       libraryDependencies ++= Seq(
           "org.monifu" %%% "minitest" % "0.14" % "test"
       ),
