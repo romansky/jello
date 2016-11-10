@@ -3,8 +3,8 @@ import com.uniformlyrandom.jello.JelloFormat
 object TestClasses {
 
   case class SimpleTestClass(
-    param1: String,
-    param2: Int
+      param1: String,
+      param2: Int
   )
 
   trait Base {
@@ -13,15 +13,15 @@ object TestClasses {
   }
 
   case class FirstBase(
-    value: String,
-    name: String,
-    someOtherValue: String
+      value: String,
+      name: String,
+      someOtherValue: String
   ) extends Base
 
   case class SecondBase(
-    value: String,
-    name: String,
-    blahBlah: Int
+      value: String,
+      name: String,
+      blahBlah: Int
   ) extends Base
 
   sealed trait TraitEnum
@@ -34,17 +34,22 @@ object TestClasses {
     }
   }
 
-
   object TestEnumeration extends Enumeration {
     type TestEnumeration = Value
     val FirstE, SecondE, ThirdE = Value
   }
 
   case class WithOptionals(
-    name: String,
-    optional: Option[String]
+      name: String,
+      optional: Option[String]
   )
 
+  case class ClassWithVals(
+      param1: String,
+      param2: Int
+  ) {
+    val isSmart = true
+    val numGreatSuccess = 42
+  }
+
 }
-
-

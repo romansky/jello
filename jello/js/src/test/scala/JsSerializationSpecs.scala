@@ -77,4 +77,13 @@ object JsSerializationSpecs extends SimpleTestSuite {
       goodTryUnserialized.get.isSuccess && goodTryUnserialized.get.get == message)
   }
 
+  it("supports a case class with methods"){
+    import  TypesLibrary._
+    val fmt = JelloFormat.format[ClassWithVals]
+    val o = ClassWithVals("param1value",2)
+    val ow = fmt.write(o)
+    val or = fmt.read(ow)
+    assert(Success(o) == or)
+  }
+
 }
