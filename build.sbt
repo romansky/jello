@@ -1,6 +1,6 @@
-val _scalaVersion = "2.11.8"
+val _scalaVersion = "2.12.1"
 val _organization = "com.uniformlyrandom"
-val _playVersion = "2.4.4"
+val _playVersion = "2.6.0-M1"
 
 scalaVersion := _scalaVersion
 organization := _organization
@@ -17,7 +17,7 @@ val jello = crossProject
   .settings(
     organization := _organization,
     name := "jello",
-    version := "0.3.1-SNAPSHOT",
+    version := "0.4.0-SNAPSHOT",
     scalacOptions += "-feature",
     homepage := Some(url("http://www.uniformlyrandom.com")),
     licenses := Seq(
@@ -50,14 +50,14 @@ val jello = crossProject
     testFrameworks += TestFrameworks.ScalaTest,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalatest" %% "scalatest" % "2.2.4" % Test
+      "org.scalatest" %% "scalatest" % "3.0.1" % Test
     )
   )
   .settings(xerial.sbt.Sonatype.sonatypeSettings: _*)
   .jsSettings(
     emitSourceMaps := true,
     libraryDependencies ++= Seq(
-      "org.monifu" %%% "minitest" % "0.14" % "test"
+      "io.monix" %%% "minitest" % "0.27" % "test"
     ),
     testFrameworks += new TestFramework("minitest.runner.Framework"),
     scalaJSStage in Test := FullOptStage,
@@ -73,7 +73,7 @@ val jello = crossProject
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "2.2.4" % Test,
+      "org.scalatest" %% "scalatest" % "3.0.1" % Test,
       "com.typesafe.play" %% "play-json" % _playVersion
     ) ++ jacksons.map(_ % "test,provided")
   )
