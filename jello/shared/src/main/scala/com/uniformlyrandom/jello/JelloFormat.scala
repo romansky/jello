@@ -4,6 +4,7 @@ import com.uniformlyrandom.jello.JelloValue.JelloString
 
 import scala.annotation.implicitNotFound
 import scala.language.experimental.macros
+import scala.reflect.internal.{Definitions, StdNames, SymbolTable}
 import scala.reflect.macros.blackbox
 import scala.util.{Failure, Success, Try}
 
@@ -122,6 +123,7 @@ object JelloFormat extends TypesLibrary {
     }
   import scala.reflect.macros.blackbox
   // TODO harden code to check its working with case class, only.
+
   def formatMacroImpl[T: c.WeakTypeTag](
       c: blackbox.Context): c.Expr[JelloFormat[T]] = {
     import c.universe._
@@ -152,7 +154,16 @@ object JelloFormat extends TypesLibrary {
           val (method, args) =
             if (typeSig.erasure =:= typeOf[Option[_]].erasure)
               (TermName("getOrElse"), List(q"None"))
-            else
+            else if (m.asTerm.isParamWithDefault) {
+              val ds = c.universe
+                .asInstanceOf[Definitions with SymbolTable with StdNames]
+              val defaultGetter =
+                ds.nme.defaultGetterName(ds.nme.CONSTRUCTOR,
+                                         ctor.paramLists.head.indexOf(m) + 1)
+              val defaultGetterName = TermName(defaultGetter.toString)
+              val member = tpeComp.member(defaultGetterName)
+              (TermName("getOrElse"), List(q"$member"))
+            } else
               (TermName("getOrElse"),
                List(q"throw new MissingObjectField($nameString, o)"))
 

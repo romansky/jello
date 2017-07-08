@@ -91,4 +91,19 @@ class JVMSerializationSpecs extends FunSpec {
     assert(Success(o) == or)
   }
 
+  it("support resetting values for overrides") {
+    import  TypesLibrary._
+
+    implicit val fmt = JelloFormat.format[ClassWithDefaults]
+
+    val providedp3 = 50
+    val providedp4 = "provided"
+    val created = ClassWithDefaults("p1", 1, providedp3, providedp4)
+    val str = JelloJson.toJsonString(created)
+    val withDefaults: ClassWithDefaults = JelloJson.createWithResetFields("param3" :: "param4" :: Nil)(str).get
+
+    assert(withDefaults.param3 == TestClasses.ClassWithDefaultsP3)
+    assert(withDefaults.param4 == TestClasses.ClassWithDefaultsP4)
+  }
+
 }

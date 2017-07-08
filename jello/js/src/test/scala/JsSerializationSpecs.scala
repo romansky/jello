@@ -11,17 +11,18 @@ object JsSerializationSpecs extends SimpleTestSuite {
 
   val it = test[Unit] _
 
-  it("serializes serializes traits"){
+  it("serializes serializes traits") {
 
     implicit val fbFormat = JelloFormat.format[FirstBase]
     implicit val sbFormat = JelloFormat.format[SecondBase]
 
-    val formatter = JelloFormat.formatTrait[Base]
+    val formatter = JelloFormat
+      .formatTrait[Base]
       .withMember[FirstBase]
       .withMember[SecondBase]
       .buildIdProperty("$class")
 
-    val first = FirstBase("first","name","some value")
+    val first = FirstBase("first", "name", "some value")
 
     val jelloValue = formatter.write(first)
 
@@ -36,9 +37,9 @@ object JsSerializationSpecs extends SimpleTestSuite {
     assert(jformat.read(jsItem) == Try(TestEnumeration.FirstE))
   }
 
-  it("support optional values fall back to None"){
+  it("support optional values fall back to None") {
 
-    val o = WithOptionals("zubiname",None)
+    val o = WithOptionals("zubiname", None)
     val fmt = JelloFormat.format[WithOptionals]
     val ow = fmt.write(o)
     val or = fmt.read(ow)
@@ -52,11 +53,17 @@ object JsSerializationSpecs extends SimpleTestSuite {
 
   }
 
-  it("serializes traits with multiple case object descendants"){
+  it("serializes traits with multiple case object descendants") {
     val formatter = JelloFormat.formatSealedTrait[TraitEnum]
-    assert(formatter.read(formatter.write(TraitEnum.Desz)) == Success(TraitEnum.Desz))
-    assert(formatter.read(formatter.write(TraitEnum.Unoz)) == Success(TraitEnum.Unoz))
-    assert(formatter.read(formatter.write(TraitEnum.Tresz("ppp",32))) == Success(TraitEnum.Tresz("ppp",32)))
+    assert(
+      formatter.read(formatter.write(TraitEnum.Desz)) == Success(
+        TraitEnum.Desz))
+    assert(
+      formatter.read(formatter.write(TraitEnum.Unoz)) == Success(
+        TraitEnum.Unoz))
+    assert(
+      formatter.read(formatter.write(TraitEnum.Tresz("ppp", 32))) == Success(
+        TraitEnum.Tresz("ppp", 32)))
   }
 
   it("serializes and de-serializes Try's") {
@@ -78,13 +85,26 @@ object JsSerializationSpecs extends SimpleTestSuite {
       goodTryUnserialized.get.isSuccess && goodTryUnserialized.get.get == message)
   }
 
-  it("supports a case class with methods"){
-    import  TypesLibrary._
+  it("supports a case class with methods") {
+    import TypesLibrary._
     val fmt = JelloFormat.format[ClassWithVals]
-    val o = ClassWithVals("param1value",2)
+    val o = ClassWithVals("param1value", 2)
     val ow = fmt.write(o)
     val or = fmt.read(ow)
     assert(Success(o) == or)
+  }
+
+  it("support resetting values for overrides") {
+    implicit val fmt = JelloFormat.format[ClassWithDefaults];
+
+    val providedp3 = 50
+    val providedp4 = "provided"
+    val created = ClassWithDefaults("p1", 1, providedp3, providedp4)
+    val str = JelloJson.toJsonString(created)
+    val withDefaults = JelloJson.createWithResetFields("param3" :: "param4" :: Nil)(str).get
+
+    assert(withDefaults.param3 == TestClasses.ClassWithDefaultsP3)
+    assert(withDefaults.param4 == TestClasses.ClassWithDefaultsP4)
   }
 
 }

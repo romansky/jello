@@ -52,4 +52,14 @@ object TestClasses {
     val numGreatSuccess = 42
   }
 
+  val ClassWithDefaultsP3 = 100
+  val ClassWithDefaultsP4 = "default string"
+
+  case class ClassWithDefaults(
+      param1: String,
+      param2: Int,
+      param3: Int = ClassWithDefaultsP3,
+      param4: String = ClassWithDefaultsP4
+  )
+
 }
