@@ -106,4 +106,21 @@ class JVMSerializationSpecs extends FunSpec {
     assert(withDefaults.param4 == TestClasses.ClassWithDefaultsP4)
   }
 
+  it("works with nested json classes"){
+    implicit val nestedFmt = JelloFormat.format[WithNested]
+    implicit val simpleFmt = JelloFormat.format[SimpleTestClass]
+
+    val c = SimpleTestClass("string",1)
+
+    val nested = WithNested(
+      JelloJson.toJsonString(c)
+    )
+
+    val nestedString = JelloJson.toJsonString(nested)
+
+    val nestedRead = nestedFmt.read(JelloJson.parse(nestedString))
+    val simpleRead = simpleFmt.read(JelloJson.parse(nestedRead.get.cls1))
+    assert(simpleRead.isSuccess)
+  }
+
 }

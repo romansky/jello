@@ -62,4 +62,10 @@ object TestClasses {
       param4: String = ClassWithDefaultsP4
   )
 
+  case class WithNested(
+    cls1: String
+  )
+
+
+
 }

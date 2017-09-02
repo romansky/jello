@@ -11,7 +11,7 @@ val jacksons = Seq(
   "com.fasterxml.jackson.core" % "jackson-databind",
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"
-).map(_ % "2.6.0")
+).map(_ % "2.8.10")
 
 val jello = crossProject
   .settings(

@@ -121,6 +121,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
       override def read(jelloValue: JelloValue): Try[JelloArray] =
         jelloValue match {
           case x: JelloArray => Success(x)
+          case x: JelloObject if x.map.isEmpty ⇒ Success(JelloArray(Nil))
           case unknown =>
             Failure(new RuntimeException(
               s"expecting ${JelloArray.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"))
