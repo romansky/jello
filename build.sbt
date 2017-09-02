@@ -1,6 +1,6 @@
 val _scalaVersion = "2.12.3"
 val _organization = "com.uniformlyrandom"
-val _playVersion = "2.6.0-M1"
+val _playVersion = "2.6.3"
 
 scalaVersion := _scalaVersion
 organization := _organization
