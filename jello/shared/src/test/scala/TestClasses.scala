@@ -12,6 +12,11 @@ object TestClasses {
     def value: String
   }
 
+  case class DefaultBase(
+    value: String,
+    name: String
+  ) extends Base
+
   case class FirstBase(
       value: String,
       name: String,

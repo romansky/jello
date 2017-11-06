@@ -24,7 +24,13 @@ class FormatBuilder[T] private (siblingBuilders: List[(reflect.ClassTag[_ <: T],
     new FormatBuilder[T]((m, jelloFormat) :: siblingBuilders)
 
 
+  def buildIdPropertyWithFallback(idProperty: String, fallback: JelloFormat[_ <: T])(implicit jelloJsonSpec: JelloJsonSpec): JelloFormat[T] =
+    buildIdProperty(idProperty, Some(fallback))
+
   def buildIdProperty(idProperty: String)(implicit jelloJsonSpec: JelloJsonSpec): JelloFormat[T] =
+    buildIdProperty(idProperty, None)
+
+  private def buildIdProperty(idProperty: String, fallback: Option[JelloFormat[_ <: T]])(implicit jelloJsonSpec: JelloJsonSpec): JelloFormat[T] =
     new JelloFormat[T] {
 
       override def read(jelloValue: JelloValue): scala.util.Try[T] = {
@@ -32,14 +38,17 @@ class FormatBuilder[T] private (siblingBuilders: List[(reflect.ClassTag[_ <: T],
           Failure(new RuntimeException(s"expected JelloObject got [${jelloValue.getClass.getSimpleName}]"))
         } else {
           val jo = jelloValue.asInstanceOf[JelloObject]
-          jo.map.get(idProperty).map {
-            case JelloString(formatterName) =>
+          jo.map.get(idProperty) match {
+            case Some(JelloString(formatterName)) =>
               siblingBuilders.find(_._1.toString() == formatterName) match {
                 case Some((_, formatter))=> formatter.asInstanceOf[JelloFormat[T]].read(jelloValue)
                 case None => Failure(new RuntimeException(s"could not find formatter for class [$formatterName] under trait [$parentName] known [${siblingBuilders.map(_._1)}]"))
               }
-            case _ => Failure(new RuntimeException(s"unexpected value at trait [$parentName] id key [$idProperty] obj [${jelloValue.toString}]"))
-          }.getOrElse(Failure(new RuntimeException(s"could not find property [$parentName] under key [$idProperty] obj [${jelloValue.toString}]")))
+            case None if fallback.isDefined =>
+              fallback.get.read(jelloValue)
+            case _ =>
+              Failure(new RuntimeException(s"unexpected value at trait [$parentName] id key [$idProperty] obj [${jelloValue.toString}]"))
+          }
         }
       }
 

@@ -11,7 +11,7 @@ object JsSerializationSpecs extends SimpleTestSuite {
 
   val it = test[Unit] _
 
-  it("serializes serializes traits") {
+  it("serializes traits") {
 
     implicit val fbFormat = JelloFormat.format[FirstBase]
     implicit val sbFormat = JelloFormat.format[SecondBase]
@@ -20,13 +20,16 @@ object JsSerializationSpecs extends SimpleTestSuite {
       .formatTrait[Base]
       .withMember[FirstBase]
       .withMember[SecondBase]
-      .buildIdProperty("$class")
+      .buildIdPropertyWithFallback("$class", JelloFormat.format[DefaultBase])
 
     val first = FirstBase("first", "name", "some value")
 
     val jelloValue = formatter.write(first)
 
     assert(formatter.read(jelloValue) == Try(first))
+
+    val craftedJsonForDefault = """{"value":"some value","name":"some name"}"""
+    assert(formatter.read(JelloJson.parse(craftedJsonForDefault)) == Try(DefaultBase("some value", "some name")))
 
   }
 

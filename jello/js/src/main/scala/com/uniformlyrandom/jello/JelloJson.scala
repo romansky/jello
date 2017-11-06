@@ -6,7 +6,7 @@ import scala.scalajs.js.Dynamic
 import scala.util.Try
 
 
-object JelloJson  extends JelloJsonSpec {
+object JelloJson extends JelloJsonSpec {
 
   import com.uniformlyrandom.jello.JelloValue._
 
