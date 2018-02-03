@@ -178,7 +178,7 @@ object JelloFormat extends TypesLibrary {
       val writeValues = classMembers.reverse
         .foldLeft(Map.empty[TermName, Type]) {
           case (outMap, m) =>
-            outMap + (TermName(m.name.decodedName.toTermName.toString.trim) -> m.typeSignature)
+            outMap + (TermName(m.name.decodedName.toTermName.toString.trim) -> m.typeSignature.asSeenFrom(tpe, tpe.typeSymbol.asClass))
         }
         .map { mv =>
           q"""(${mv._1.toString},implicitly[com.uniformlyrandom.jello.JelloFormat[${mv._2}]].write(o.${mv._1}))"""
