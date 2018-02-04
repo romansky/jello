@@ -17,7 +17,7 @@ val jello = crossProject
   .settings(
     organization := _organization,
     name := "jello",
-    version := "0.4.2-SNAPSHOT",
+    version := "0.4.4-SNAPSHOT",
     scalacOptions += "-feature",
     homepage := Some(url("http://www.uniformlyrandom.com")),
     licenses := Seq(

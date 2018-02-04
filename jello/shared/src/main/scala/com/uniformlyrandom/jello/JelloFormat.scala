@@ -109,6 +109,8 @@ object JelloFormat extends TypesLibrary {
       override def write(o: E#Value): JelloValue = JelloString(o.toString)
     }
 
+  def apply[A]: JelloFormat[A] = macro formatMacroImpl[A]
+
   def format[A]: JelloFormat[A] = macro formatMacroImpl[A]
 
   implicit def implicitFormat[A](implicit reader: JelloReader[A],
@@ -146,7 +148,7 @@ object JelloFormat extends TypesLibrary {
       val readMemberValues = classMembers.foldLeft(
         List.empty[(c.universe.TermName, c.universe.Tree)]) {
         case (outList, m) =>
-          val typeSig = m.typeSignature
+          val typeSig = m.typeSignature.asSeenFrom(tpe, tpe.typeSymbol.asClass)
           val nameSafe = TermName(s"${m.name.toString.trim}_value")
           val nameString = m.name.toString.trim
 
