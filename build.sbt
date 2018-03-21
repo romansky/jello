@@ -1,4 +1,4 @@
-val _scalaVersion = "2.12.3"
+val _scalaVersion = "2.12.4"
 val _organization = "com.uniformlyrandom"
 val _playVersion = "2.6.3"
 
