@@ -3,9 +3,8 @@ package com.uniformlyrandom.jello
 import com.uniformlyrandom.jello.JelloErrors.ValidationError
 import com.uniformlyrandom.jello.JelloValue._
 
-import scala.collection.{Traversable, generic}
-import scala.util.{Failure, Success, Try}
-
+import scala.collection.{ generic, Traversable }
+import scala.util.{ Failure, Success, Try }
 import scala.language.higherKinds
 
 trait TypesLibrary extends LowPriorityDefaultReads {
@@ -70,7 +69,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
           Failure(ValidationError(unknown, classOf[JelloNumber]))
       }
   }
-  implicit val numberLongWriter: JelloWriter[Long] = new JelloWriter[Long] {
+  implicit val numberLongWriter: JelloWriter[Long] =  new JelloWriter[Long] {
     override def write(o: Long): JelloValue = JelloNumber(BigDecimal(o))
   }
   // boolean
@@ -92,8 +91,11 @@ trait TypesLibrary extends LowPriorityDefaultReads {
         jelloValue match {
           case x: JelloNumber => Success(x)
           case unknown =>
-            Failure(new RuntimeException(
-              s"expecting ${JelloNumber.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"))
+            Failure(
+              new RuntimeException(
+                s"expecting ${JelloNumber.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"
+              )
+            )
         }
     }
   implicit val jelloBoolReader: JelloReader[JelloBool] =
@@ -102,8 +104,11 @@ trait TypesLibrary extends LowPriorityDefaultReads {
         jelloValue match {
           case x: JelloBool => Success(x)
           case unknown =>
-            Failure(new RuntimeException(
-              s"expecting ${JelloBool.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"))
+            Failure(
+              new RuntimeException(
+                s"expecting ${JelloBool.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"
+              )
+            )
         }
     }
   implicit val jelloStringReader: JelloReader[JelloString] =
@@ -112,19 +117,26 @@ trait TypesLibrary extends LowPriorityDefaultReads {
         jelloValue match {
           case x: JelloString => Success(x)
           case unknown =>
-            Failure(new RuntimeException(
-              s"expecting ${JelloString.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"))
+            Failure(
+              new RuntimeException(
+                s"expecting ${JelloString.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"
+              )
+            )
         }
     }
+
   implicit val jelloArrayReader: JelloReader[JelloArray] =
     new JelloReader[JelloArray] {
       override def read(jelloValue: JelloValue): Try[JelloArray] =
         jelloValue match {
-          case x: JelloArray => Success(x)
+          case x: JelloArray                   => Success(x)
           case x: JelloObject if x.map.isEmpty ⇒ Success(JelloArray(Nil))
           case unknown =>
-            Failure(new RuntimeException(
-              s"expecting ${JelloArray.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"))
+            Failure(
+              new RuntimeException(
+                s"expecting ${JelloArray.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"
+              )
+            )
         }
     }
   implicit val jelloNullReader: JelloReader[JelloNull.type] =
@@ -133,8 +145,11 @@ trait TypesLibrary extends LowPriorityDefaultReads {
         jelloValue match {
           case JelloNull => Success(JelloNull)
           case unknown =>
-            Failure(new RuntimeException(
-              s"expecting ${JelloNull.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"))
+            Failure(
+              new RuntimeException(
+                s"expecting ${JelloNull.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"
+              )
+            )
         }
     }
 
@@ -158,13 +173,13 @@ trait TypesLibrary extends LowPriorityDefaultReads {
     new JelloReader[Option[T]] {
       override def read(jelloValue: JelloValue): Try[Option[T]] =
         jelloValue match {
-          case JelloNull => Success(None)
+          case JelloNull  => Success(None)
           case othervalue => jelloReader.read(othervalue).map(Some(_))
         }
     }
+
   // maps with String keys
-  implicit def mapReader[V](implicit vReader: JelloReader[V])
-    : JelloReader[collection.immutable.Map[String, V]] =
+  implicit def mapReader[V](implicit vReader: JelloReader[V]): JelloReader[collection.immutable.Map[String, V]] =
     new JelloReader[Map[String, V]] {
       override def read(jelloValue: JelloValue): Try[Map[String, V]] =
         jelloValue match {
@@ -177,21 +192,16 @@ trait TypesLibrary extends LowPriorityDefaultReads {
                     case Success(valueRead) =>
                       Success(out + (key -> valueRead))
                     case Failure(reason) =>
-                      Failure(
-                        new RuntimeException(
-                          s"failed to convert Map as expected for key [$key]",
-                          reason))
+                      Failure(new RuntimeException(s"failed to convert Map as expected for key [$key]", reason))
                   }
               }
               .map(_.toList.reverse.toMap)
 
           case unknown =>
-            Failure(new RuntimeException(
-              s"was expecting JelloObject instead got [${unknown.toString}]"))
+            Failure(new RuntimeException(s"was expecting JelloObject instead got [${unknown.toString}]"))
         }
     }
-  implicit def mapWriter[V](implicit vWriter: JelloWriter[V])
-    : JelloWriter[collection.immutable.Map[String, V]] =
+  implicit def mapWriter[V](implicit vWriter: JelloWriter[V]): JelloWriter[collection.immutable.Map[String, V]] =
     new JelloWriter[Map[String, V]] {
       override def write(o: Map[String, V]): JelloValue =
         JelloObject(o.map { case (k, v) => k -> vWriter.write(v) })
@@ -207,8 +217,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
           case Success(jelloValue) ⇒
             JelloObject(Map(TRY_SUCCESS_KEY → jelloValue))
           case Failure(throwable) ⇒
-            JelloObject(
-              Map(TRY_FAILURE_KEY → JelloString(throwable.getMessage)))
+            JelloObject(Map(TRY_FAILURE_KEY → JelloString(throwable.getMessage)))
         }
     }
 
@@ -219,14 +228,14 @@ trait TypesLibrary extends LowPriorityDefaultReads {
           case obj: JelloObject if obj.map.contains(TRY_SUCCESS_KEY) =>
             jelloReader.read(obj.map(TRY_SUCCESS_KEY)).map(Success(_))
           case obj: JelloObject if obj.map.contains(TRY_FAILURE_KEY) =>
-            Success(
-              Failure(
-                new RuntimeException(
-                  obj.map(TRY_FAILURE_KEY).asInstanceOf[JelloString].v)))
+            Success(Failure(new RuntimeException(obj.map(TRY_FAILURE_KEY).asInstanceOf[JelloString].v)))
           case othervalue =>
-            Failure(new RuntimeException(
-              s"serialized Try[] object needs to have either `$TRY_SUCCESS_KEY` " +
-                s"or `$TRY_FAILURE_KEY` but found neither"))
+            Failure(
+              new RuntimeException(
+                s"serialized Try[] object needs to have either `$TRY_SUCCESS_KEY` " +
+                  s"or `$TRY_FAILURE_KEY` but found neither"
+              )
+            )
         }
     }
 
@@ -242,9 +251,8 @@ trait TypesLibrary extends LowPriorityDefaultReads {
   */
 trait LowPriorityDefaultReads {
   // traversable
-  implicit def traversableReader[F[_], A](
-      implicit bf: generic.CanBuildFrom[F[_], A, F[A]],
-      ra: JelloReader[A]): JelloReader[F[A]] = new JelloReader[F[A]] {
+  implicit def traversableReader[F[_], A](implicit bf: generic.CanBuildFrom[F[_], A, F[A]],
+                                          ra: JelloReader[A]): JelloReader[F[A]] = new JelloReader[F[A]] {
 
     override def read(jelloValue: JelloValue): Try[F[A]] =
       jelloValue match {
@@ -271,15 +279,13 @@ trait LowPriorityDefaultReads {
       }
   }
 
-  implicit def traversableWriter[A](
-      implicit wa: JelloWriter[A]): JelloWriter[Traversable[A]] =
+  implicit def traversableWriter[A](implicit wa: JelloWriter[A]): JelloWriter[Traversable[A]] =
     new JelloWriter[Traversable[A]] {
       override def write(o: scala.Traversable[A]): JelloValue =
         JelloArray(o.map(wa.write).toSeq)
     }
 
-  implicit def arrayWriter[A](
-      implicit wa: JelloWriter[A]): JelloWriter[Array[A]] =
+  implicit def arrayWriter[A](implicit wa: JelloWriter[A]): JelloWriter[Array[A]] =
     new JelloWriter[Array[A]] {
       override def write(o: Array[A]): JelloValue = JelloArray(o.map(wa.write))
     }
