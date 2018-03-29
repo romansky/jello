@@ -184,7 +184,7 @@ private[jello] class JelloSerializers extends Serializers.Base {
   }
 }
 
-private[jello] object JelloJacksonJson {
+object JelloJacksonJson {
 
   private val mapper = (new ObjectMapper).registerModule(JelloJacksonModule)
 
