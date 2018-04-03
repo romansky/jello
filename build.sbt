@@ -50,14 +50,14 @@ val jello = crossProject
     testFrameworks += TestFrameworks.ScalaTest,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalatest" %% "scalatest" % "3.0.1" % Test
+      "org.scalatest" %% "scalatest" % "3.0.5" % Test
     )
   )
   .settings(xerial.sbt.Sonatype.sonatypeSettings: _*)
   .jsSettings(
     emitSourceMaps := true,
     libraryDependencies ++= Seq(
-      "io.monix" %%% "minitest" % "0.27" % "test"
+      "io.monix" %%% "minitest" % "2.1.1" % "test"
     ),
     testFrameworks += new TestFramework("minitest.runner.Framework"),
     scalaJSStage in Test := FullOptStage,
@@ -73,7 +73,7 @@ val jello = crossProject
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.0.1" % Test,
+      "org.scalatest" %% "scalatest" % "3.0.5" % Test,
       "com.typesafe.play" %% "play-json" % _playVersion
     ) ++ jacksons.map(_ % "test,provided")
   )
@@ -87,8 +87,7 @@ lazy val preventPublication = Seq[Def.Setting[_]](
   publishLocalSigned := (),
   publishArtifact := false,
   publishTo := Some(
-    Resolver.file("Unused transient repository",
-                  target.value / "fakepublish")),
+    Resolver.file("Unused transient repository", target.value / "fakepublish")),
   packagedArtifacts := Map.empty
 )
 

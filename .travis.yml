@@ -1,7 +1,7 @@
 # See http://about.travis-ci.org/docs/user/build-configuration/
 language: scala
 scala:
-  - 2.11.6
+  - 2.12.4
 # whitelist branches for now. need backport branch to support 2.8.x
 branches:
   only:
@@ -11,4 +11,4 @@ notifications:
     recipients:
       - roman.land@gmail.com
 jdk:
-  - oraclejdk8
+  - oraclejdk10

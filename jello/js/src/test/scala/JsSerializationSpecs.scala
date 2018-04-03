@@ -3,13 +3,12 @@ import java.util.UUID
 import TestClasses._
 import com.uniformlyrandom.jello.{JelloFormat, JelloJson, TypesLibrary}
 import minitest.SimpleTestSuite
-import minitest.api.TestBuilder
 
 import scala.util.{Success, Try}
 
 object JsSerializationSpecs extends SimpleTestSuite {
 
-  val it = test[Unit] _
+  val it = test _
 
   it("serializes traits") {
 
