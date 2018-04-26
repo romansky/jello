@@ -11,6 +11,6 @@ object JelloError {
   case class NotAnObject(jelloValue: JelloValue) extends JelloError(s"input needs to be an object and not [${jelloValue.name}]")
   // TODO serialize the jello object inside to JSON
   case class MissingObjectField(fieldName: String, jelloObject: JelloObject)
-    extends JelloError(s"field [$fieldName] in object [$jelloObject]")
+    extends JelloError(s"missing field [$fieldName] in object [$jelloObject]")
 
 }
