@@ -69,7 +69,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
           Failure(ValidationError(unknown, classOf[JelloNumber]))
       }
   }
-  implicit val numberLongWriter: JelloWriter[Long] =  new JelloWriter[Long] {
+  implicit val numberLongWriter: JelloWriter[Long] = new JelloWriter[Long] {
     override def write(o: Long): JelloValue = JelloNumber(BigDecimal(o))
   }
   // boolean
@@ -177,7 +177,32 @@ trait TypesLibrary extends LowPriorityDefaultReads {
           case othervalue => jelloReader.read(othervalue).map(Some(_))
         }
     }
+  // handle tuples, to certain extent
+  implicit def tuple2Writer[T1, T2](implicit t1JelloWriter: JelloWriter[T1],
+                                    t2JelloWriter: JelloWriter[T2]): JelloWriter[(T1, T2)] =
+    new JelloWriter[(T1, T2)] {
+      override def write(o: (T1, T2)): JelloValue =
+        JelloArray(Seq(t1JelloWriter.write(o._1), t2JelloWriter.write(o._2)))
+    }
 
+  implicit def tuple2Reader[T1, T2](implicit t1JelloReader: JelloReader[T1],
+                                    t2JelloReader: JelloReader[T2]): JelloReader[(T1, T2)] =
+    new JelloReader[(T1, T2)] {
+      override def read(jelloValue: JelloValue): Try[(T1, T2)] =
+        jelloValue match {
+          case JelloArray(items) if items.length == 2 =>
+            Try {
+              val t1v = t1JelloReader
+                .read(items.head)
+                .get
+              val t2v = t2JelloReader.read(items.last).get
+              (t1v, t2v)
+            }
+
+          case otherwise ⇒
+            Failure(new RuntimeException(s"failed to convert Tuple2 as expected for key input value=[$otherwise]"))
+        }
+    }
   // maps with String keys
   implicit def mapReader[V](implicit vReader: JelloReader[V]): JelloReader[collection.immutable.Map[String, V]] =
     new JelloReader[Map[String, V]] {
