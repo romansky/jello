@@ -24,16 +24,10 @@ val jello = crossProject
       ("MIT", url("http://opensource.org/licenses/mit-license.php"))),
 //    scalacOptions ++= Seq("-Ymacro-debug-lite"),
     scalaVersion := _scalaVersion,
-    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
+//    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
     // Sonatype
     publishArtifact in Test := false,
-    publishTo <<= version { (v: String) =>
-      val nexus = "https://oss.sonatype.org/"
-      if (v.trim.endsWith("SNAPSHOT"))
-        Some("snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("releases" at nexus + "service/local/staging/deploy/maven2")
-    },
+    publishTo := sonatypePublishTo.value,
     pomExtra :=
       <scm>
             <url>git@github.com:uniformlyrandom/jello.git</url>
@@ -79,19 +73,6 @@ val jello = crossProject
   )
 
 import com.typesafe.sbt.pgp.PgpKeys._
-
-lazy val preventPublication = Seq[Def.Setting[_]](
-  publish := (),
-  publishLocal := (),
-  publishSigned := (),
-  publishLocalSigned := (),
-  publishArtifact := false,
-  publishTo := Some(
-    Resolver.file("Unused transient repository", target.value / "fakepublish")),
-  packagedArtifacts := Map.empty
-)
-
-preventPublication
 
 lazy val jelloJS = jello.js
 lazy val jelloJVM = jello.jvm
