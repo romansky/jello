@@ -11,4 +11,4 @@ notifications:
     recipients:
       - roman.land@gmail.com
 jdk:
-  - oraclejdk10
+  - openjdk10
