@@ -1,9 +1,14 @@
+import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
+import com.typesafe.sbt.pgp.PgpKeys._
+
 val _scalaVersion = "2.12.4"
 val _organization = "com.uniformlyrandom"
 val _playVersion = "2.6.7"
 
 scalaVersion := _scalaVersion
 organization := _organization
+
+skip in publish := true
 
 val jacksons = Seq(
   "com.fasterxml.jackson.core" % "jackson-core",
@@ -13,33 +18,34 @@ val jacksons = Seq(
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"
 ).map(_ % "2.8.10")
 
-val jello = crossProject
+val jello = crossProject(JSPlatform, JVMPlatform)
   .settings(
     organization := _organization,
     name := "jello",
-    version := "0.4.4-SNAPSHOT",
+    version := "0.6.0",
     scalacOptions += "-feature",
     homepage := Some(url("http://www.uniformlyrandom.com")),
     licenses := Seq(
       ("MIT", url("http://opensource.org/licenses/mit-license.php"))),
-//    scalacOptions ++= Seq("-Ymacro-debug-lite"),
+    //    scalacOptions ++= Seq("-Ymacro-debug-lite"),
     scalaVersion := _scalaVersion,
-//    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
+    //    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
     // Sonatype
     publishArtifact in Test := false,
     publishTo := sonatypePublishTo.value,
+    publishConfiguration := publishConfiguration.value.withOverwrite(true),
     pomExtra :=
       <scm>
-            <url>git@github.com:uniformlyrandom/jello.git</url>
-            <connection>scm:git:git@github.com:uniformlyrandom/jello.git</connection>
-          </scm>
-          <developers>
-            <developer>
-              <id>romansky</id>
-              <name>Roman Landenband</name>
-              <url>http://www.uniformlyrandom.com</url>
-            </developer>
-          </developers>,
+        <url>git@github.com:uniformlyrandom/jello.git</url>
+        <connection>scm:git:git@github.com:uniformlyrandom/jello.git</connection>
+      </scm>
+        <developers>
+          <developer>
+            <id>romansky</id>
+            <name>Roman Landenband</name>
+            <url>http://www.uniformlyrandom.com</url>
+          </developer>
+        </developers>,
     // publish Github sources
     testFrameworks += TestFrameworks.ScalaTest,
     libraryDependencies ++= Seq(
@@ -56,14 +62,14 @@ val jello = crossProject
     testFrameworks += new TestFramework("minitest.runner.Framework"),
     scalaJSStage in Test := FullOptStage,
     scalacOptions ++= (if (isSnapshot.value) Seq.empty
-                       else
-                         Seq({
-                           val a = baseDirectory.value.toURI.toString
-                             .replaceFirst("[^/]+/?$", "")
-                           val g =
-                             "https://raw.githubusercontent.com/japgolly/scalajs-react"
-                           s"-P:scalajs:mapSourceURI:$a->$g/v${version.value}/"
-                         }))
+    else
+      Seq({
+        val a = baseDirectory.value.toURI.toString
+          .replaceFirst("[^/]+/?$", "")
+        val g =
+          "https://raw.githubusercontent.com/japgolly/scalajs-react"
+        s"-P:scalajs:mapSourceURI:$a->$g/v${version.value}/"
+      }))
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
@@ -71,8 +77,6 @@ val jello = crossProject
       "com.typesafe.play" %% "play-json" % _playVersion
     ) ++ jacksons.map(_ % "test,provided")
   )
-
-import com.typesafe.sbt.pgp.PgpKeys._
 
 lazy val jelloJS = jello.js
 lazy val jelloJVM = jello.jvm
