@@ -1,33 +1,33 @@
-import com.uniformlyrandom.jello.{JelloWriter, JelloReader, JelloFormat, TypesLibrary}
-import org.scalatest.FunSpec
+import com.uniformlyrandom.jello.{JelloFormat, JelloReader, JelloWriter, TypesLibrary}
+import org.scalatest.funspec.AnyFunSpec
 
 import scala.util.{Success, Try}
 
-class JelloFormatSpec extends FunSpec {
+class JelloFormatSpec extends AnyFunSpec {
 
   import TestClasses._
 
-  it("reading and writing case classes"){
+  it("reading and writing case classes") {
 
     val formatter = JelloFormat.format[SimpleTestClass]
-    val c = SimpleTestClass("string",1)
+    val c = SimpleTestClass("string", 1)
     val written = formatter.write(c)
     val read = formatter.read(written)
 
     assert(read == Try(c))
   }
 
-  it("reads and writes lists of case class types"){
+  it("reads and writes lists of case class types") {
 
     import TypesLibrary._
 
-    implicit val formatter = JelloFormat.format[SimpleTestClass]
+    implicit val formatter: JelloFormat[SimpleTestClass] = JelloFormat.format[SimpleTestClass]
     val formatterList = implicitly[JelloFormat[List[SimpleTestClass]]]
-    val c1 = SimpleTestClass("string1",1)
-    val c2 = SimpleTestClass("string2",2)
-    val c3 = SimpleTestClass("string3",3)
+    val c1 = SimpleTestClass("string1", 1)
+    val c2 = SimpleTestClass("string2", 2)
+    val c3 = SimpleTestClass("string3", 3)
 
-    val written =  formatterList.write(c1 :: c2 :: c3 :: Nil)
+    val written = formatterList.write(c1 :: c2 :: c3 :: Nil)
     val read = formatterList.read(written)
 
     assert(read == Try(c1 :: c2 :: c3 :: Nil))
@@ -35,7 +35,7 @@ class JelloFormatSpec extends FunSpec {
   }
 
 
-  it("reads and writes primitives"){
+  it("reads and writes primitives") {
 
     import TypesLibrary._
 
@@ -45,11 +45,11 @@ class JelloFormatSpec extends FunSpec {
 
   }
 
-  it("reads and writes maps"){
+  it("reads and writes maps") {
     import TypesLibrary._
 
-    val map = Map[String,String]("key1"-> "value1", "key2"-> "value2")
-    val formatter = implicitly[JelloFormat[Map[String,String]]]
+    val map = Map[String, String]("key1" -> "value1", "key2" -> "value2")
+    val formatter = implicitly[JelloFormat[Map[String, String]]]
 
     val jjson = formatter.write(map)
 
@@ -57,10 +57,10 @@ class JelloFormatSpec extends FunSpec {
 
   }
 
-  it("support optional values fall back to None"){
+  it("support optional values fall back to None") {
     import TypesLibrary._
 
-    val o = WithOptionals("name",None)
+    val o = WithOptionals("name", None)
     val fmt = JelloFormat.format[WithOptionals]
     val ow = fmt.write(o)
     val or = fmt.read(ow)
@@ -68,10 +68,7 @@ class JelloFormatSpec extends FunSpec {
   }
 
 
-
-
   // TODO: write test for all failure conditions
-
 
 
 }

@@ -92,7 +92,8 @@ private[jello] class JelloValueDeserializer(factory: TypeFactory, klass: Class[_
       case JsonTokenId.ID_START_ARRAY => (None, ReadingList(ListBuffer()) +: parserContext)
 
       case JsonTokenId.ID_END_ARRAY => parserContext match {
-        case ReadingList(content) :: stack => (Some(JelloArray(content)), stack)
+//        case ReadingList(content) :: stack => (Some(JelloArray(content)), stack)
+        case ReadingList(content) :: stack => (Some(JelloArray(content.toSeq)), stack)
         case _ => throw new RuntimeException("We should have been reading list, something got wrong")
       }
 
@@ -104,7 +105,7 @@ private[jello] class JelloValueDeserializer(factory: TypeFactory, klass: Class[_
       }
 
       case JsonTokenId.ID_END_OBJECT => parserContext match {
-        case ReadingMap(content) :: stack => (Some(JelloObject(content)), stack)
+        case ReadingMap(content) :: stack => (Some(JelloObject(content.toSeq)), stack)
         case _ => throw new RuntimeException("We should have been reading an object, something got wrong")
       }
 

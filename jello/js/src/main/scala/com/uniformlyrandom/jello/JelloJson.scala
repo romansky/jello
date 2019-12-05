@@ -25,7 +25,7 @@ object JelloJson extends JelloJsonSpec {
       case null => JelloNull
       case a: js.Array[_] =>
         val members = a.map(ai=> parseNative(ai))
-        JelloArray(members)
+        JelloArray(members.toSeq)
       case o: js.Object =>
         val d = o.asInstanceOf[js.Dictionary[_]]
         val values = d.values.map(_v=> parseNative(_v))

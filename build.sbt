@@ -1,9 +1,8 @@
-import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
-import com.typesafe.sbt.pgp.PgpKeys._
+import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-val _scalaVersion = "2.12.4"
+val _scalaVersion = "2.12.10"
 val _organization = "com.uniformlyrandom"
-val _playVersion = "2.6.7"
+val _playVersion = "2.8.0-M7"
 
 scalaVersion := _scalaVersion
 organization := _organization
@@ -25,8 +24,7 @@ val jello = crossProject(JSPlatform, JVMPlatform)
     version := "0.6.0",
     scalacOptions += "-feature",
     homepage := Some(url("http://www.uniformlyrandom.com")),
-    licenses := Seq(
-      ("MIT", url("http://opensource.org/licenses/mit-license.php"))),
+    licenses := Seq(("MIT", url("http://opensource.org/licenses/mit-license.php"))),
     //    scalacOptions ++= Seq("-Ymacro-debug-lite"),
     scalaVersion := _scalaVersion,
     //    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
@@ -50,14 +48,15 @@ val jello = crossProject(JSPlatform, JVMPlatform)
     testFrameworks += TestFrameworks.ScalaTest,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalatest" %% "scalatest" % "3.0.5" % Test
+      "org.scalatest" %% "scalatest" % "3.2.0-M2" % Test
     )
   )
   .settings(xerial.sbt.Sonatype.sonatypeSettings: _*)
   .jsSettings(
     emitSourceMaps := true,
     libraryDependencies ++= Seq(
-      "io.monix" %%% "minitest" % "2.1.1" % "test"
+      "io.monix" %%% "minitest" % "2.7.0" % "test",
+      "org.scala-lang.modules" %%% "scala-collection-compat" % "2.1.2"
     ),
     testFrameworks += new TestFramework("minitest.runner.Framework"),
     scalaJSStage in Test := FullOptStage,
@@ -73,8 +72,9 @@ val jello = crossProject(JSPlatform, JVMPlatform)
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.0.5" % Test,
-      "com.typesafe.play" %% "play-json" % _playVersion
+      "org.scalatest" %% "scalatest" % "3.2.0-M2" % Test,
+      "com.typesafe.play" %% "play-json" % _playVersion,
+      "org.scala-lang.modules" %% "scala-collection-compat" % "2.1.2"
     ) ++ jacksons.map(_ % "test,provided")
   )
 

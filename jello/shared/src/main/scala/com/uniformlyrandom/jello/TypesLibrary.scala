@@ -2,10 +2,9 @@ package com.uniformlyrandom.jello
 
 import com.uniformlyrandom.jello.JelloErrors.ValidationError
 import com.uniformlyrandom.jello.JelloValue._
-
-import scala.collection.{ generic, Traversable }
-import scala.util.{ Failure, Success, Try }
+import scala.collection.generic.CanBuild
 import scala.language.higherKinds
+import scala.util.{Failure, Success, Try}
 
 trait TypesLibrary extends LowPriorityDefaultReads {
   // handling primitive types
@@ -129,7 +128,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
     new JelloReader[JelloArray] {
       override def read(jelloValue: JelloValue): Try[JelloArray] =
         jelloValue match {
-          case x: JelloArray                   => Success(x)
+          case x: JelloArray => Success(x)
           case x: JelloObject if x.map.isEmpty ⇒ Success(JelloArray(Nil))
           case unknown =>
             Failure(
@@ -162,6 +161,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
     new JelloWriter[JelloValue] {
       override def write(o: JelloValue): JelloValue = o
     }
+
   // option
   implicit def optionWriter[T](implicit jelloWriter: JelloWriter[T]) =
     new JelloWriter[Option[T]] {
@@ -173,20 +173,21 @@ trait TypesLibrary extends LowPriorityDefaultReads {
     new JelloReader[Option[T]] {
       override def read(jelloValue: JelloValue): Try[Option[T]] =
         jelloValue match {
-          case JelloNull  => Success(None)
+          case JelloNull => Success(None)
           case othervalue => jelloReader.read(othervalue).map(Some(_))
         }
     }
+
   // handle tuples, to certain extent
   implicit def tuple2Writer[T1, T2](implicit t1JelloWriter: JelloWriter[T1],
-                                    t2JelloWriter: JelloWriter[T2]): JelloWriter[(T1, T2)] =
+    t2JelloWriter: JelloWriter[T2]): JelloWriter[(T1, T2)] =
     new JelloWriter[(T1, T2)] {
       override def write(o: (T1, T2)): JelloValue =
         JelloArray(Seq(t1JelloWriter.write(o._1), t2JelloWriter.write(o._2)))
     }
 
   implicit def tuple2Reader[T1, T2](implicit t1JelloReader: JelloReader[T1],
-                                    t2JelloReader: JelloReader[T2]): JelloReader[(T1, T2)] =
+    t2JelloReader: JelloReader[T2]): JelloReader[(T1, T2)] =
     new JelloReader[(T1, T2)] {
       override def read(jelloValue: JelloValue): Try[(T1, T2)] =
         jelloValue match {
@@ -203,6 +204,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
             Failure(new RuntimeException(s"failed to convert Tuple2 as expected for key input value=[$otherwise]"))
         }
     }
+
   // maps with String keys
   implicit def mapReader[V](implicit vReader: JelloReader[V]): JelloReader[collection.immutable.Map[String, V]] =
     new JelloReader[Map[String, V]] {
@@ -226,15 +228,17 @@ trait TypesLibrary extends LowPriorityDefaultReads {
             Failure(new RuntimeException(s"was expecting JelloObject instead got [${unknown.toString}]"))
         }
     }
+
   implicit def mapWriter[V](implicit vWriter: JelloWriter[V]): JelloWriter[collection.immutable.Map[String, V]] =
     new JelloWriter[Map[String, V]] {
       override def write(o: Map[String, V]): JelloValue =
-        JelloObject(o.map { case (k, v) => k -> vWriter.write(v) })
+        JelloObject(o.toSeq.map { case (k, v) => (k, vWriter.write(v)) })
     }
 
   // Try[T]
   val TRY_SUCCESS_KEY = "success"
   val TRY_FAILURE_KEY = "failure"
+
   implicit def tryWriter[T](implicit jelloWriter: JelloWriter[T]) =
     new JelloWriter[Try[T]] {
       override def write(o: Try[T]): JelloValue =
@@ -276,8 +280,8 @@ trait TypesLibrary extends LowPriorityDefaultReads {
   */
 trait LowPriorityDefaultReads {
   // traversable
-  implicit def traversableReader[F[_], A](implicit bf: generic.CanBuildFrom[F[_], A, F[A]],
-                                          ra: JelloReader[A]): JelloReader[F[A]] = new JelloReader[F[A]] {
+  implicit def traversableReader[F[_], A](implicit bf: CanBuild[A, F[A]],
+    ra: JelloReader[A]): JelloReader[F[A]] = new JelloReader[F[A]] {
 
     override def read(jelloValue: JelloValue): Try[F[A]] =
       jelloValue match {
@@ -304,9 +308,9 @@ trait LowPriorityDefaultReads {
       }
   }
 
-  implicit def traversableWriter[A](implicit wa: JelloWriter[A]): JelloWriter[Traversable[A]] =
-    new JelloWriter[Traversable[A]] {
-      override def write(o: scala.Traversable[A]): JelloValue =
+  implicit def traversableWriter[A](implicit wa: JelloWriter[A]): JelloWriter[Iterable[A]] =
+    new JelloWriter[Iterable[A]] {
+      override def write(o: scala.Iterable[A]): JelloValue =
         JelloArray(o.map(wa.write).toSeq)
     }
 

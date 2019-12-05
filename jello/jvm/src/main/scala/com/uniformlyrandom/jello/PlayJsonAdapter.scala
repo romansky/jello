@@ -10,7 +10,7 @@ trait PlayJsonAdapter {
   private def playJsToJelloJs(json: JsValue): JelloValue =
     json match {
       case JsNull => JelloNull
-      case JsArray(values) => JelloArray(values.map(playJsToJelloJs))
+      case JsArray(values) => JelloArray(values.toSeq.map(playJsToJelloJs))
       case JsObject(values) => JelloObject(values.toSeq.map { case (k,v) => k -> playJsToJelloJs(v) })
       case JsBoolean(b) => JelloBool(b)
       case JsNumber(n) => JelloNumber(n)

@@ -2,11 +2,11 @@ import java.util.UUID
 
 import TestClasses._
 import com.uniformlyrandom.jello.{JelloFormat, JelloJson, TypesLibrary}
-import org.scalatest.FunSpec
+import org.scalatest.funspec.AnyFunSpec
 
 import scala.util.{Success, Try}
 
-class JVMSerializationSpecs extends FunSpec {
+class JVMSerializationSpecs extends AnyFunSpec {
 
   it("serializes traits") {
 
