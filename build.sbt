@@ -21,7 +21,7 @@ val jello = crossProject(JSPlatform, JVMPlatform)
   .settings(
     organization := _organization,
     name := "jello",
-    version := "0.6.0",
+    version := "0.6.1",
     scalacOptions += "-feature",
     homepage := Some(url("http://www.uniformlyrandom.com")),
     licenses := Seq(("MIT", url("http://opensource.org/licenses/mit-license.php"))),
@@ -56,7 +56,8 @@ val jello = crossProject(JSPlatform, JVMPlatform)
     emitSourceMaps := true,
     libraryDependencies ++= Seq(
       "io.monix" %%% "minitest" % "2.7.0" % "test",
-      "org.scala-lang.modules" %%% "scala-collection-compat" % "2.1.2"
+      "org.scala-lang.modules" %%% "scala-collection-compat" % "2.1.2",
+      "org.scala-js" %%% "scalajs-java-time" % "0.2.6"
     ),
     testFrameworks += new TestFramework("minitest.runner.Framework"),
     scalaJSStage in Test := FullOptStage,

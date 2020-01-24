@@ -1,5 +1,6 @@
 package com.uniformlyrandom.jello
 
+import java.time.Instant
 import com.uniformlyrandom.jello.JelloErrors.ValidationError
 import com.uniformlyrandom.jello.JelloValue._
 import scala.collection.generic.CanBuild
@@ -59,6 +60,9 @@ trait TypesLibrary extends LowPriorityDefaultReads {
     new JelloWriter[BigDecimal] {
       override def write(o: BigDecimal): JelloValue = JelloNumber(o)
     }
+  implicit val instantWriter: JelloWriter[Instant] = new JelloWriter[Instant] {
+    override def write(o: Instant): JelloValue = JelloObject(Map("epochSecond" → JelloNumber(o.getEpochSecond), "nanoOfSecond" → JelloNumber(o.getNano)))
+  }
   //numbers - long
   implicit val numberLongReader: JelloReader[Long] = new JelloReader[Long] {
     override def read(jelloValue: JelloValue): Try[Long] =
@@ -119,6 +123,21 @@ trait TypesLibrary extends LowPriorityDefaultReads {
             Failure(
               new RuntimeException(
                 s"expecting ${JelloString.getClass.getSimpleName} but passed ${unknown.getClass.getSimpleName}"
+              )
+            )
+        }
+    }
+
+  implicit val jelloInstantReader: JelloReader[Instant] =
+    new JelloReader[Instant] {
+      override def read(jelloValue: JelloValue): Try[Instant] =
+        jelloValue match {
+          case x: JelloObject if x.map.contains("epochSecond") && x.map.contains("nanoOfSecond") =>
+            Success(Instant.ofEpochSecond(x.map.get("epochSecond").asInstanceOf[JelloNumber].v.toLong, x.map.get("nanoOfSecond").asInstanceOf[JelloNumber].v.toLong))
+          case _ =>
+            Failure(
+              new RuntimeException(
+                s"""expecting {"epochSecond": 123...,"nanoOfSecond":123...} but passed ${jelloValue.toString}"""
               )
             )
         }
