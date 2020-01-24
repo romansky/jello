@@ -133,7 +133,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
       override def read(jelloValue: JelloValue): Try[Instant] =
         jelloValue match {
           case x: JelloObject if x.map.contains("epochSecond") && x.map.contains("nanoOfSecond") =>
-            Success(Instant.ofEpochSecond(x.map.get("epochSecond").asInstanceOf[JelloNumber].v.toLong, x.map.get("nanoOfSecond").asInstanceOf[JelloNumber].v.toLong))
+            Success(Instant.ofEpochSecond(x.map("epochSecond").asInstanceOf[JelloNumber].v.toLong, x.map("nanoOfSecond").asInstanceOf[JelloNumber].v.toLong))
           case _ =>
             Failure(
               new RuntimeException(
