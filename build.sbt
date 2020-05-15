@@ -3,7 +3,9 @@ import sbtcrossproject.CrossPlugin.autoImport.crossProject
 val _scalaVersion = "2.12.10"
 val _organization = "com.uniformlyrandom"
 val _playVersion = "2.8.0-M7"
+val _version = "0.6.1"
 
+version := _version
 scalaVersion := _scalaVersion
 organization := _organization
 
@@ -21,7 +23,7 @@ val jello = crossProject(JSPlatform, JVMPlatform)
   .settings(
     organization := _organization,
     name := "jello",
-    version := "0.6.1",
+    version := _version,
     scalacOptions += "-feature",
     homepage := Some(url("http://www.uniformlyrandom.com")),
     licenses := Seq(("MIT", url("http://opensource.org/licenses/mit-license.php"))),
@@ -30,8 +32,9 @@ val jello = crossProject(JSPlatform, JVMPlatform)
     //    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
     // Sonatype
     publishArtifact in Test := false,
-    publishTo := sonatypePublishTo.value,
+    publishTo := sonatypePublishToBundle.value,
     publishConfiguration := publishConfiguration.value.withOverwrite(true),
+//    sonatypeBundleDirectory := (ThisBuild / baseDirectory).value / target.value.getName / "sonatype-staging" / s"${version.value}",
     pomExtra :=
       <scm>
         <url>git@github.com:uniformlyrandom/jello.git</url>
