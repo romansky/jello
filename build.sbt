@@ -50,7 +50,7 @@ val jello = crossProject(JSPlatform, JVMPlatform)
     // publish Github sources
     testFrameworks += TestFrameworks.ScalaTest,
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided,
       "org.scalatest" %% "scalatest" % "3.2.2" % Test
     )
   )
