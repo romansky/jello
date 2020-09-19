@@ -1,9 +1,9 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-val _scalaVersion = "2.12.10"
+val _scalaVersion = "2.12.12"
 val _organization = "com.uniformlyrandom"
-val _playVersion = "2.8.0-M7"
-val _version = "0.6.1"
+val _playVersion = "2.9.1"
+val _version = "0.7.0"
 
 version := _version
 scalaVersion := _scalaVersion
@@ -17,7 +17,7 @@ val jacksons = Seq(
   "com.fasterxml.jackson.core" % "jackson-databind",
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"
-).map(_ % "2.8.10")
+).map(_ % "2.11.2")
 
 val jello = crossProject(JSPlatform, JVMPlatform)
   .settings(
@@ -51,15 +51,14 @@ val jello = crossProject(JSPlatform, JVMPlatform)
     testFrameworks += TestFrameworks.ScalaTest,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalatest" %% "scalatest" % "3.2.0-M2" % Test
+      "org.scalatest" %% "scalatest" % "3.2.2" % Test
     )
   )
   .settings(xerial.sbt.Sonatype.sonatypeSettings: _*)
   .jsSettings(
-    emitSourceMaps := true,
     libraryDependencies ++= Seq(
-      "io.monix" %%% "minitest" % "2.7.0" % "test",
-      "org.scala-lang.modules" %%% "scala-collection-compat" % "2.1.2",
+      "io.monix" %%% "minitest" % "2.8.2" % "test",
+      "org.scala-lang.modules" %%% "scala-collection-compat" % "2.2.0",
       "org.scala-js" %%% "scalajs-java-time" % "0.2.6"
     ),
     testFrameworks += new TestFramework("minitest.runner.Framework"),
@@ -76,9 +75,9 @@ val jello = crossProject(JSPlatform, JVMPlatform)
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.2.0-M2" % Test,
+      "org.scalatest" %% "scalatest" % "3.2.2" % Test,
       "com.typesafe.play" %% "play-json" % _playVersion,
-      "org.scala-lang.modules" %% "scala-collection-compat" % "2.1.2"
+      "org.scala-lang.modules" %% "scala-collection-compat" % "2.2.0"
     ) ++ jacksons.map(_ % "test,provided")
   )
 
