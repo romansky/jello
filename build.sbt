@@ -1,6 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-val _scalaVersion = "2.12.12"
+val _scalaVersion = "2.13.3"
 val _organization = "com.uniformlyrandom"
 val _playVersion = "2.9.1"
 val _version = "0.7.0"

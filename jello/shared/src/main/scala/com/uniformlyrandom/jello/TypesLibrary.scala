@@ -3,8 +3,7 @@ package com.uniformlyrandom.jello
 import java.time.Instant
 import com.uniformlyrandom.jello.JelloErrors.ValidationError
 import com.uniformlyrandom.jello.JelloValue._
-import scala.collection.generic.CanBuild
-import scala.language.higherKinds
+import scala.collection.Factory
 import scala.util.{Failure, Success, Try}
 
 trait TypesLibrary extends LowPriorityDefaultReads {
@@ -299,7 +298,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
   */
 trait LowPriorityDefaultReads {
   // traversable
-  implicit def traversableReader[F[_], A](implicit bf: CanBuild[A, F[A]],
+  implicit def traversableReader[F[_], A](implicit bf: Factory[A, F[A]],
     ra: JelloReader[A]): JelloReader[F[A]] = new JelloReader[F[A]] {
 
     override def read(jelloValue: JelloValue): Try[F[A]] =
@@ -317,10 +316,7 @@ trait LowPriorityDefaultReads {
             } match {
             case Left(failure) => failure
             case Right(items) =>
-              val builder = bf()
-              builder.sizeHint(items)
-              builder ++= items.reverse
-              Success(builder.result())
+              Success(bf.fromSpecific(items.reverse))
           }
         case unknown =>
           Failure(ValidationError(unknown, classOf[JelloArray]))

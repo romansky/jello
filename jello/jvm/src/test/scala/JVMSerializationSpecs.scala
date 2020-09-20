@@ -85,35 +85,35 @@ class JVMSerializationSpecs extends AnyFunSpec {
       goodTryUnserialized.get.isSuccess && goodTryUnserialized.get.get == message)
   }
 
-  it("supports a case class with methods"){
-    import  TypesLibrary._
+  it("supports a case class with methods") {
+    import TypesLibrary._
     val fmt = JelloFormat.format[ClassWithVals]
-    val o = ClassWithVals("param1value",2)
+    val o = ClassWithVals("param1value", 2)
     val ow = fmt.write(o)
     val or = fmt.read(ow)
     assert(Success(o) == or)
   }
 
   it("support resetting values for overrides") {
-    import  TypesLibrary._
+    import TypesLibrary._
 
-    implicit val fmt = JelloFormat.format[ClassWithDefaults]
+    implicit val fmt: JelloFormat[ClassWithDefaults] = JelloFormat.format[ClassWithDefaults]
 
     val providedp3 = 50
     val providedp4 = "provided"
     val created = ClassWithDefaults("p1", 1, providedp3, providedp4)
     val str = JelloJson.toJsonString(created)
-    val withDefaults: ClassWithDefaults = JelloJson.createWithResetFields("param3" :: "param4" :: Nil)(str).get
+    val withDefaults: ClassWithDefaults = JelloJson.createWithResetFields[ClassWithDefaults]("param3" :: "param4" :: Nil)(str).get
 
     assert(withDefaults.param3 == TestClasses.ClassWithDefaultsP3)
     assert(withDefaults.param4 == TestClasses.ClassWithDefaultsP4)
   }
 
-  it("works with nested json classes"){
+  it("works with nested json classes") {
     implicit val nestedFmt = JelloFormat.format[WithNested]
     implicit val simpleFmt = JelloFormat.format[SimpleTestClass]
 
-    val c = SimpleTestClass("string",1)
+    val c = SimpleTestClass("string", 1)
 
     val nested = WithNested(
       JelloJson.toJsonString(c)
