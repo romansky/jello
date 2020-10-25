@@ -60,7 +60,7 @@ trait TypesLibrary extends LowPriorityDefaultReads {
       override def write(o: BigDecimal): JelloValue = JelloNumber(o)
     }
   implicit val instantWriter: JelloWriter[Instant] = new JelloWriter[Instant] {
-    override def write(o: Instant): JelloValue = JelloObject(Map("epochSecond" → JelloNumber(o.getEpochSecond), "nanoOfSecond" → JelloNumber(o.getNano)))
+    override def write(o: Instant): JelloValue = JelloObject(Map("epochSecond" -> JelloNumber(o.getEpochSecond), "nanoOfSecond" -> JelloNumber(o.getNano)))
   }
   //numbers - long
   implicit val numberLongReader: JelloReader[Long] = new JelloReader[Long] {
@@ -262,9 +262,9 @@ trait TypesLibrary extends LowPriorityDefaultReads {
       override def write(o: Try[T]): JelloValue =
         o.map(jelloWriter.write) match {
           case Success(jelloValue) ⇒
-            JelloObject(Map(TRY_SUCCESS_KEY → jelloValue))
+            JelloObject(Map(TRY_SUCCESS_KEY -> jelloValue))
           case Failure(throwable) ⇒
-            JelloObject(Map(TRY_FAILURE_KEY → JelloString(throwable.getMessage)))
+            JelloObject(Map(TRY_FAILURE_KEY -> JelloString(throwable.getMessage)))
         }
     }
 
