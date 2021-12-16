@@ -1,7 +1,7 @@
 # See http://about.travis-ci.org/docs/user/build-configuration/
 language: scala
 scala:
-  - 2.13.3
+  - 2.13.7
 # whitelist branches for now. need backport branch to support 2.8.x
 branches:
   only:
