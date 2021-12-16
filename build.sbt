@@ -1,6 +1,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-val _scalaVersion = "2.13.3"
+val _scalaVersion = "2.13.7"
 val _organization = "com.uniformlyrandom"
 val _playVersion = "2.9.1"
 val _version = "0.7.0"
@@ -51,13 +51,13 @@ val jello = crossProject(JSPlatform, JVMPlatform)
     testFrameworks += TestFrameworks.ScalaTest,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided,
-      "org.scalatest" %% "scalatest" % "3.2.2" % Test
+      "org.scalatest" %% "scalatest" % "3.2.10" % Test
     )
   )
   .settings(xerial.sbt.Sonatype.sonatypeSettings: _*)
   .jsSettings(
     libraryDependencies ++= Seq(
-      "io.monix" %%% "minitest" % "2.8.2" % "test",
+      "io.monix" %%% "minitest" % "2.9.6" % "test",
       "org.scala-lang.modules" %%% "scala-collection-compat" % "2.2.0",
       "org.scala-js" %%% "scalajs-java-time" % "0.2.6"
     ),
@@ -75,7 +75,7 @@ val jello = crossProject(JSPlatform, JVMPlatform)
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.2.2" % Test,
+      "org.scalatest" %% "scalatest" % "3.2.10" % Test,
       "com.typesafe.play" %% "play-json" % _playVersion,
       "org.scala-lang.modules" %% "scala-collection-compat" % "2.2.0"
     ) ++ jacksons.map(_ % "test,provided")
