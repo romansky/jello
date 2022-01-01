@@ -22,7 +22,7 @@ Thus Jello was born.
 ## Installation
 
 ```
-libraryDependencies ++= Seq("com.uniformlyrandom" %%% "jello" % "0.3.0)
+libraryDependencies ++= Seq("com.uniformlyrandom" %%% "jello" % "1.0.0)
 ```
 
 ## Overview
