@@ -1,12 +1,9 @@
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-val _scalaVersion = "2.13.7"
 val _organization = "com.uniformlyrandom"
-val _playVersion = "2.9.2"
-val _version = "1.0.0"
 
-version := _version
-scalaVersion := _scalaVersion
+version := CommonVersions.jello
+scalaVersion := CommonVersions.scala
 organization := _organization
 
 publish / skip := true
@@ -19,18 +16,18 @@ val jacksons = Seq(
   "com.fasterxml.jackson.core" % "jackson-databind",
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
   "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"
-).map(_ % "2.13.1")
+).map(_ % CommonVersions.jackson)
 
 val jello = crossProject(JSPlatform, JVMPlatform)
   .settings(
     organization := _organization,
     name := "jello",
-    version := _version,
+    version := CommonVersions.jello,
     scalacOptions += "-feature",
     homepage := Some(url("https://www.yielder.io")),
     licenses := Seq(("MIT", url("https://opensource.org/licenses/mit-license.php"))),
     //    scalacOptions ++= Seq("-Ymacro-debug-lite"),
-    scalaVersion := _scalaVersion,
+    scalaVersion := CommonVersions.scala,
     //    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
     // Sonatype
     Test / publishArtifact := false,
@@ -53,24 +50,24 @@ val jello = crossProject(JSPlatform, JVMPlatform)
     testFrameworks += TestFrameworks.ScalaTest,
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided,
-      "org.scalatest" %% "scalatest" % "3.2.10" % Test
+      "org.scalatest" %% "scalatest" % CommonVersions.scalaTest % Test
     )
   )
   .settings(xerial.sbt.Sonatype.sonatypeSettings: _*)
   .jsSettings(
     libraryDependencies ++= Seq(
-      "io.monix" %%% "minitest" % "2.9.6" % "test",
-      "org.scala-lang.modules" %%% "scala-collection-compat" % "2.6.0",
-      "org.scala-js" %%% "scalajs-java-time" % "0.2.6"
+      "io.monix" %%% "minitest" % CommonVersions.minitest % "test",
+      "org.scala-lang.modules" %%% "scala-collection-compat" % CommonVersions.scalaCollectionsCompat,
+      "org.scala-js" %%% "scalajs-java-time" % CommonVersions.sclaJsJavaTime
     ),
     testFrameworks += new TestFramework("minitest.runner.Framework"),
     Test / scalaJSStage := FullOptStage
   )
   .jvmSettings(
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.2.10" % Test,
-      "com.typesafe.play" %% "play-json" % _playVersion,
-      "org.scala-lang.modules" %% "scala-collection-compat" % "2.6.0"
+      "org.scalatest" %% "scalatest" % CommonVersions.scalaTest % Test,
+      "com.typesafe.play" %% "play-json" % CommonVersions.play,
+      "org.scala-lang.modules" %% "scala-collection-compat" % CommonVersions.scalaCollectionsCompat
     ) ++ jacksons.map(_ % "test,provided")
   )
 

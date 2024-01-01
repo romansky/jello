@@ -1,5 +1,3 @@
-import java.util.UUID
-
 import TestClasses._
 import com.uniformlyrandom.jello.{JelloFormat, JelloJson, TypesLibrary}
 import minitest.SimpleTestSuite
@@ -70,7 +68,7 @@ object JsSerializationSpecs extends SimpleTestSuite {
 
   it("serializes and de-serializes Try's") {
     import TypesLibrary._
-    val message = s"MESSAGE ${UUID.randomUUID().toString}"
+    val message = s"MESSAGE RANDOM STRING"
     val badTry: Try[String] = Try(throw new RuntimeException(message))
     val goodTry = Try(message)
     val badSerialized = JelloJson.toJsonString(badTry)

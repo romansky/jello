@@ -21,3 +21,5 @@ project/plugins/project/
 .idea_modules
 build-log.xml
 *.iml
+
+0_local.sbt
